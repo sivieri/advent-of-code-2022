@@ -2,7 +2,7 @@ package me.sivieri.aoc2022.day2
 
 import me.sivieri.aoc2022.Utils
 
-object Main1 {
+object Main2 {
 
     @JvmStatic
     fun main(args: Array<String>) {
@@ -12,13 +12,8 @@ object Main1 {
                 val (a, b) = it.split(" ", limit = 2)
                 a.first() to b.first()
             }
-        val mapping = mapOf(
-            'X' to RPSMove.Rock,
-            'Y' to RPSMove.Paper,
-            'Z' to RPSMove.Scissors
-        )
         val strategy = Strategy()
-        val result = strategy.resolveFromResponse(data, mapping)
+        val result = strategy.resolveFromResult(data)
         println(result)
     }
 

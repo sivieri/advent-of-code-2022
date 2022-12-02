@@ -11,6 +11,24 @@ enum class RPSMove(
     Paper('B', 2),
     Scissors('C', 3);
 
+    fun resultAgainstMove(otherMove: RPSMove): Result = when (this) {
+        Rock -> when (otherMove) {
+            Rock -> Result.DRAW
+            Paper -> Result.LOSE
+            Scissors -> Result.WIN
+        }
+        Paper -> when (otherMove) {
+            Rock -> Result.WIN
+            Paper -> Result.DRAW
+            Scissors -> Result.LOSE
+        }
+        Scissors -> when (otherMove) {
+            Rock -> Result.LOSE
+            Paper -> Result.WIN
+            Scissors -> Result.DRAW
+        }
+    }
+
     companion object {
         fun fromLetter(letter: Char) = when (letter) {
             Rock.letter -> Rock
