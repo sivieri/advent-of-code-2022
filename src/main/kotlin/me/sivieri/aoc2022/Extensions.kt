@@ -80,3 +80,11 @@ internal fun <K, V> Map<K, V>.combineWith(otherMap: Map<K, V>, f: (v1: V?, v2: V
 internal suspend fun <K, V, R> Map<K, V>.pmap(f: suspend (Map.Entry<K, V>) -> R): List<R> = coroutineScope {
     map { async { f(it) } }.awaitAll()
 }
+
+internal fun String.halve(): Pair<String, String> {
+    val additionalOne = if (this.length % 2 == 0) 0 else 1
+    return Pair(
+        this.substring(0, this.length / 2 + additionalOne),
+        this.substring(this.length / 2 + additionalOne, this.length)
+    )
+}

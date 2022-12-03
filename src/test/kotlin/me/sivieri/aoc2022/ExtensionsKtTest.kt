@@ -2,6 +2,7 @@ package me.sivieri.aoc2022
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.containsInAnyOrder
+import org.hamcrest.Matchers.`is`
 import org.junit.Test
 
 class ExtensionsKtTest {
@@ -48,6 +49,22 @@ class ExtensionsKtTest {
             Pair(3, false)
         )
         assertThat(result, containsInAnyOrder(*expected.toTypedArray()))
+    }
+
+    @Test
+    fun `halve even string`() {
+        val s = "aabbcc"
+        val (part1, part2) = s.halve()
+        assertThat(part1, `is`("aab"))
+        assertThat(part2, `is`("bcc"))
+    }
+
+    @Test
+    fun `halve odd string`() {
+        val s = "aabcc"
+        val (part1, part2) = s.halve()
+        assertThat(part1, `is`("aab"))
+        assertThat(part2, `is`("cc"))
     }
 
 }
