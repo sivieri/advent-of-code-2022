@@ -88,3 +88,9 @@ internal fun String.halve(): Pair<String, String> {
         this.substring(this.length / 2 + additionalOne, this.length)
     )
 }
+
+internal fun <T> List<T>.tail(): List<T> = when (this.size) {
+    0 -> throw IllegalArgumentException("There is no tail in an empty list!")
+    1 -> emptyList()
+    else -> this.subList(1, this.size)
+}

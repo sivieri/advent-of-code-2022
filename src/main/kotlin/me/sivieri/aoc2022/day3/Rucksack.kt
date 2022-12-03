@@ -13,7 +13,7 @@ data class Rucksack(
             .sumOf { priorities[it]!! }
 
     companion object {
-        private val priorities = ('a'..'z').zip(1..26)
+        val priorities = ('a'..'z').zip(1..26)
             .union(('A'..'Z').zip(27..52))
             .toMap()
     }
