@@ -7,4 +7,6 @@ data class Range(
 
     fun fullyContains(other: Range): Boolean = min <= other.min && max >= other.max
 
+    fun overlaps(other: Range): Boolean = (min..max).intersect(other.min..other.max).isNotEmpty()
+
 }

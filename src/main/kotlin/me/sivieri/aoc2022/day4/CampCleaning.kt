@@ -13,4 +13,8 @@ class CampCleaning(input: List<String>) {
         range1.fullyContains(range2) || range2.fullyContains(range1)
     }
 
+    fun countGlobalOverlaps(): Int = ranges.count { (range1, range2) ->
+        range1.overlaps(range2)
+    }
+
 }
