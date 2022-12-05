@@ -8,11 +8,12 @@ class Crane(
     moves: String
 ) {
 
-    val craneMoves: List<CraneMove> = moves
+    private val craneMoves: List<CraneMove> = moves
         .let {
             if (it.isNotBlank()) {
                 it
                     .split("\n")
+                    .filter { it.isNotBlank() }
                     .map {
                         val parts = it.split(" ")
                         CraneMove(parts[1].toInt(), parts[3].toInt(), parts[5].toInt())
@@ -23,6 +24,7 @@ class Crane(
     val status: List<CraneStack> = run {
         val lines = initialStatus
             .split("\n")
+            .filter { it.isNotBlank() }
             .reversed()
         val indexes = lines.first()
         val content = lines.tail()
@@ -36,6 +38,23 @@ class Crane(
         }
         stacks
     }
+
+    fun move(move: CraneMove): Unit =
+        (1..move.n).forEach { _ ->
+            getStack(move.to).elements.push(getStack(move.from).elements.pop())
+        }
+
+    fun moveAll(debug: Boolean = false): Unit = craneMoves.forEach {
+        move(it)
+        if (debug) {
+            println(toString())
+            println()
+        }
+    }
+
+    fun getTopStatus(): String = status.joinToString("") { it.elements.peek().toString() }
+
+    private fun getStack(index: Int): CraneStack = status.find { it.index == index }!!
 
     override fun toString(): String {
         val tempElements = status.map { CraneStack(it.index, it.elements.clone()) }
