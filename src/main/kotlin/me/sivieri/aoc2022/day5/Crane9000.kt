@@ -3,7 +3,7 @@ package me.sivieri.aoc2022.day5
 import me.sivieri.aoc2022.tail
 import java.util.ArrayDeque
 
-class Crane(
+class Crane9000(
     initialStatus: String,
     moves: String
 ) {

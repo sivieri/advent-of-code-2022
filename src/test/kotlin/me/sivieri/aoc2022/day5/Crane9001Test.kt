@@ -5,7 +5,7 @@ import org.hamcrest.Matchers.`is`
 import org.junit.Test
 import java.util.ArrayDeque
 
-class CraneTest {
+class Crane9001Test {
 
     @Test
     fun parsing() {
@@ -15,7 +15,7 @@ class CraneTest {
             "[Z] [M] [P]",
             " 1   2   3 "
         ).joinToString("\n")
-        val crane = Crane(input, "")
+        val crane = Crane9001(input, "")
         val expectedStatus = listOf(
             CraneStack(1, ArrayDeque(listOf('N', 'Z'))),
             CraneStack(2, ArrayDeque(listOf('D', 'C', 'M'))),
@@ -32,7 +32,7 @@ class CraneTest {
             "[Z] [M] [P]",
             " 1   2   3 "
         ).joinToString("\n")
-        val crane = Crane(input, "")
+        val crane = Crane9001(input, "")
         assertThat(crane.toString(), `is`(input))
     }
 
@@ -44,7 +44,7 @@ class CraneTest {
             "[Z] [M] [P]",
             " 1   2   3 "
         ).joinToString("\n")
-        val crane = Crane(input, "")
+        val crane = Crane9001(input, "")
         val move = CraneMove(1, 2, 3)
         crane.move(move)
         val expectedStatus = listOf(
@@ -63,19 +63,19 @@ class CraneTest {
             "[Z] [M] [P]",
             " 1   2   3 "
         ).joinToString("\n")
-        val crane = Crane(input, "")
+        val crane = Crane9001(input, "")
         val move = CraneMove(2, 2, 3)
         crane.move(move)
         val expectedStatus = listOf(
             CraneStack(1, ArrayDeque(listOf('N', 'Z'))),
             CraneStack(2, ArrayDeque(listOf('M'))),
-            CraneStack(3, ArrayDeque(listOf('C', 'D', 'P'))),
+            CraneStack(3, ArrayDeque(listOf('D', 'C', 'P'))),
         )
         assertThat(crane.status, `is`(expectedStatus))
     }
 
     @Test
-    fun `part 1 example all moves`() {
+    fun `part 2 example all moves`() {
         val input = listOf(
             "    [D]    ",
             "[N] [C]    ",
@@ -88,18 +88,18 @@ class CraneTest {
             move 2 from 2 to 1
             move 1 from 1 to 2
         """.trimIndent()
-        val crane = Crane(input, moves)
+        val crane = Crane9001(input, moves)
         crane.moveAll()
         val expectedStatus = listOf(
-            CraneStack(1, ArrayDeque(listOf('C'))),
-            CraneStack(2, ArrayDeque(listOf('M'))),
-            CraneStack(3, ArrayDeque(listOf('Z', 'N', 'D', 'P'))),
+            CraneStack(1, ArrayDeque(listOf('M'))),
+            CraneStack(2, ArrayDeque(listOf('C'))),
+            CraneStack(3, ArrayDeque(listOf('D', 'N', 'Z', 'P'))),
         )
         assertThat(crane.status, `is`(expectedStatus))
     }
 
     @Test
-    fun `part 1 example final status`() {
+    fun `part 2 example final status`() {
         val input = listOf(
             "    [D]    ",
             "[N] [C]    ",
@@ -112,9 +112,9 @@ class CraneTest {
             move 2 from 2 to 1
             move 1 from 1 to 2
         """.trimIndent()
-        val crane = Crane(input, moves)
+        val crane = Crane9001(input, moves)
         crane.moveAll()
-        assertThat(crane.getTopStatus(), `is`("CMZ"))
+        assertThat(crane.getTopStatus(), `is`("MCD"))
     }
 
 }
