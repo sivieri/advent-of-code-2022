@@ -5,11 +5,11 @@ class CommunicationSystem(
 ) {
 
     @Suppress("KotlinConstantConditions")
-    fun countPremarkerData(): Int {
-        val windows = input.windowed(4, 1)
+    fun countPremarkerData(size: Int): Int {
+        val windows = input.windowed(size, 1)
         val (counter, _) = windows.fold(Pair(0, false)) { (counter, found), s ->
             if (!found) {
-                if (s.toList().distinct().size == 4) Pair(counter + 4, true)
+                if (s.toList().distinct().size == size) Pair(counter + size, true)
                 else Pair(counter + 1, found)
             }
             else Pair(counter, found)
