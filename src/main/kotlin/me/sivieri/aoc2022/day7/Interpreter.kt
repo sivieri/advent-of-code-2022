@@ -54,6 +54,16 @@ class Interpreter(
             .filter { it <= most }
             .sum()
 
+    fun findSizeOfSmallestToDelete(totalSize: Int, requiredSpace: Int): Int {
+        val currentSize = root.size()
+        val missingSize = requiredSpace - (totalSize - currentSize)
+        return root
+            .getAllSubdirectories()
+            .map { it.size() }
+            .filter { it >= missingSize }
+            .minOf { it }
+    }
+
     override fun toString(): String {
         return root.toString()
     }

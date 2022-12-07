@@ -60,7 +60,7 @@ class InterpreterTest {
     }
 
     @Test
-    fun `part 1 example tree generation with duplicate names`() {
+    fun `part 1 modified example tree generation with duplicate names`() {
         val input = """
             $ cd /
             $ ls
@@ -154,7 +154,7 @@ class InterpreterTest {
     }
 
     @Test
-    fun `part 1 example total size at most 100000 with duplicate names`() {
+    fun `part 1 modified example total size at most 100000 with duplicate names`() {
         val input = """
             $ cd /
             $ ls
@@ -190,7 +190,7 @@ class InterpreterTest {
     }
 
     @Test
-    fun `part 1 example with duplicate names count all`() {
+    fun `part 1 modified example with duplicate names count all`() {
         val input = """
             $ cd /
             $ ls
@@ -224,6 +224,68 @@ class InterpreterTest {
         val interpreter = Interpreter(input)
         assertThat(interpreter.root.countAllFiles(), `is`(12))
         assertThat(interpreter.root.countAllDirectories(), `is`(5))
+    }
+
+    @Test
+    fun `part 2 example total current size`() {
+        val input = """
+            $ cd /
+            $ ls
+            dir a
+            14848514 b.txt
+            8504156 c.dat
+            dir d
+            $ cd a
+            $ ls
+            dir e
+            29116 f
+            2557 g
+            62596 h.lst
+            $ cd e
+            $ ls
+            584 i
+            $ cd ..
+            $ cd ..
+            $ cd d
+            $ ls
+            4060174 j
+            8033020 d.log
+            5626152 d.ext
+            7214296 k
+        """.trimIndent().split("\n").map { it.trim() }
+        val interpreter = Interpreter(input)
+        assertThat(interpreter.root.size(), `is`(48381165))
+    }
+
+    @Test
+    fun `part 2 example size to be deleted`() {
+        val input = """
+            $ cd /
+            $ ls
+            dir a
+            14848514 b.txt
+            8504156 c.dat
+            dir d
+            $ cd a
+            $ ls
+            dir e
+            29116 f
+            2557 g
+            62596 h.lst
+            $ cd e
+            $ ls
+            584 i
+            $ cd ..
+            $ cd ..
+            $ cd d
+            $ ls
+            4060174 j
+            8033020 d.log
+            5626152 d.ext
+            7214296 k
+        """.trimIndent().split("\n").map { it.trim() }
+        val interpreter = Interpreter(input)
+        assertThat(interpreter.findSizeOfSmallestToDelete(70000000, 30000000), `is`(24933642))
     }
 
 }
