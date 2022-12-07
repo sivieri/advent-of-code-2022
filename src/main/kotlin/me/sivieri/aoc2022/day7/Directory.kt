@@ -40,6 +40,10 @@ data class Directory(
 
     fun getAllSubdirectories(): List<Directory> = subdirectories.flatMap { it.getAllSubdirectories() } + this
 
+    fun countAllFiles(): Int = files.size + subdirectories.sumOf { it.countAllFiles() }
+
+    fun countAllDirectories(): Int = 1 + subdirectories.sumOf { it.countAllDirectories() }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

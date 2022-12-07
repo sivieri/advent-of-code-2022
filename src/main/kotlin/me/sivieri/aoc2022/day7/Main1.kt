@@ -9,6 +9,8 @@ object Main1 {
         val data = Utils.readInputToList(7)
         val interpreter = Interpreter(data)
         println(interpreter)
+        println(interpreter.root.countAllFiles())
+        println(interpreter.root.countAllDirectories())
         val result = interpreter.findTotalSizeOfAtMost(100000)
         println(result)
     }
