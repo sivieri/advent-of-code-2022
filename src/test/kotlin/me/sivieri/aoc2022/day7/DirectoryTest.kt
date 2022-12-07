@@ -1,7 +1,7 @@
 package me.sivieri.aoc2022.day7
 
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
+import org.hamcrest.Matchers.*
 import org.junit.Test
 import kotlin.test.assertNull
 
@@ -179,7 +179,8 @@ class DirectoryTest {
         val two = Directory("two", root, mutableListOf(), mutableListOf())
         root.subdirectories.add(one)
         root.subdirectories.add(two)
-        assertThat(root.addSubdirIfNotExists("three"), `is`(true))
+        root.addSubdirIfNotExists("three")
+        assertThat(root.subdirectories.map { it.name }.contains("three"), `is`(true))
     }
 
     @Test
@@ -194,7 +195,8 @@ class DirectoryTest {
         val two = Directory("two", root, mutableListOf(), mutableListOf())
         root.subdirectories.add(one)
         root.subdirectories.add(two)
-        assertThat(root.addSubdirIfNotExists("one"), `is`(false))
+        root.addSubdirIfNotExists("one")
+        assertThat(root.subdirectories.map { it.name }.contains("one"), `is`(true))
     }
 
     @Test
@@ -208,7 +210,8 @@ class DirectoryTest {
                 File("two", 2)
             )
         )
-        assertThat(root.addFileIfNotExists("three", 3), `is`(true))
+        root.addFileIfNotExists("three", 3)
+        assertThat(root.files.contains(File("three", 3)), `is`(true))
     }
 
     @Test
@@ -222,7 +225,28 @@ class DirectoryTest {
                 File("two", 2)
             )
         )
-        assertThat(root.addFileIfNotExists("one", 1), `is`(false))
+        root.addFileIfNotExists("one", 1)
+        assertThat(root.files.contains(File("one", 1)), `is`(true))
+    }
+
+    @Test
+    fun `get all subdirectories`() {
+        val root = Directory(
+            "root",
+            null,
+            mutableListOf(),
+            mutableListOf()
+        )
+        val one = Directory("one", root, mutableListOf(), mutableListOf())
+        val two = Directory("two", root, mutableListOf(), mutableListOf())
+        val oneone = Directory("oneone", one, mutableListOf(), mutableListOf())
+        val onetwo = Directory("onetwo", one, mutableListOf(), mutableListOf())
+        root.subdirectories.add(one)
+        root.subdirectories.add(two)
+        one.subdirectories.add(oneone)
+        one.subdirectories.add(onetwo)
+        val subdirectories = root.getAllSubdirectories().map { it.name }
+        assertThat(subdirectories, containsInAnyOrder("root", "one", "two", "oneone", "onetwo"))
     }
 
 }

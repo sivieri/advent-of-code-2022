@@ -21,13 +21,24 @@ data class Directory(
             .mapNotNull { it.getFileByName(name) }
             .let { if (it.isEmpty()) null else it.first() }
 
-    fun addSubdirIfNotExists(name: String) =
-        if (getDirectoryByName(name) == null) subdirectories.add(Directory(name, this, mutableListOf(), mutableListOf()))
-        else { false }
+    fun addSubdirIfNotExists(name: String): Directory {
+        if (getDirectoryByName(name) == null) subdirectories.add(
+            Directory(
+                name,
+                this,
+                mutableListOf(),
+                mutableListOf()
+            )
+        )
+        return this
+    }
 
-    fun addFileIfNotExists(name: String, size: Int) =
+    fun addFileIfNotExists(name: String, size: Int): Directory {
         if (getFileByName(name) == null) files.add(File(name, size))
-        else { false }
+        return this
+    }
+
+    fun getAllSubdirectories(): List<Directory> = subdirectories.flatMap { it.getAllSubdirectories() } + this
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -50,7 +61,15 @@ data class Directory(
     }
 
     override fun toString(): String {
-        return "Directory(name='$name', subdirectories=$subdirectories, files=$files)"
+        val cur = "- $name (dir)"
+        val files = files.map { "  $it" }
+        val directories = subdirectories.map {
+            it
+                .toString()
+                .split("\n")
+                .joinToString("\n") { "  $it" }
+        }
+        return (listOf(cur) + directories + files).joinToString("\n")
     }
 
 }

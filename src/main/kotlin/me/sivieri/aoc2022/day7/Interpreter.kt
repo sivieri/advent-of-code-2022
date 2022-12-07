@@ -31,7 +31,10 @@ class Interpreter(
                     currentDir = when (command.args.first()) {
                         "/" -> root
                         ".." -> currentDir.parent ?: throw IllegalArgumentException("Cannot go back from root!")
-                        else -> currentDir.getDirectoryByName(command.args.first()) ?: throw IllegalArgumentException("Directory ${command.args.first()} does not exist!")
+                        else -> currentDir.getDirectoryByName(command.args.first())
+                            ?: currentDir
+                                .addSubdirIfNotExists(command.args.first())
+                                .getDirectoryByName(command.args.first())!!
                     }
                 }
                 "ls" -> {
@@ -47,4 +50,13 @@ class Interpreter(
         }
     }
 
+    fun findTotalSizeOfAtMost(most: Int): Int = root
+            .getAllSubdirectories()
+            .map { it.size() }
+            .filter { it <= most }
+            .sum()
+
+    override fun toString(): String {
+        return root.toString()
+    }
 }
