@@ -86,7 +86,7 @@ class DirectoryTest {
         val two = Directory("two", root, mutableListOf(), mutableListOf())
         root.subdirectories.add(one)
         root.subdirectories.add(two)
-        assertNull(root.getDirectoryByName("three"))
+        assertNull(root.getSubdirectoryByName("three"))
     }
 
     @Test
@@ -101,7 +101,7 @@ class DirectoryTest {
         val two = Directory("two", root, mutableListOf(), mutableListOf())
         root.subdirectories.add(one)
         root.subdirectories.add(two)
-        assertThat(root.getDirectoryByName("one")?.name, `is`("one"))
+        assertThat(root.getSubdirectoryByName("one")?.name, `is`("one"))
     }
 
     @Test
@@ -120,7 +120,7 @@ class DirectoryTest {
         root.subdirectories.add(two)
         one.subdirectories.add(oneone)
         one.subdirectories.add(onetwo)
-        assertThat(root.getDirectoryByName("onetwo")?.name, `is`("onetwo"))
+        assertNull(root.getSubdirectoryByName("onetwo")?.name)
     }
 
     @Test
@@ -164,7 +164,7 @@ class DirectoryTest {
             File("subtwo", 4)
         ))
         root.subdirectories.add(sub)
-        assertThat(root.getFileByName("subtwo")?.name, `is`("subtwo"))
+        assertNull(root.getFileByName("subtwo")?.name)
     }
 
     @Test

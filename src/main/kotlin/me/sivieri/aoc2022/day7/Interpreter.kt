@@ -31,10 +31,8 @@ class Interpreter(
                     currentDir = when (command.args.first()) {
                         "/" -> root
                         ".." -> currentDir.parent ?: throw IllegalArgumentException("Cannot go back from root!")
-                        else -> currentDir.getDirectoryByName(command.args.first())
-                            ?: currentDir
-                                .addSubdirIfNotExists(command.args.first())
-                                .getDirectoryByName(command.args.first())!!
+                        else -> currentDir.getSubdirectoryByName(command.args.first())
+                            ?: throw java.lang.IllegalArgumentException("Directory ${command.args.first()} never created!")
                     }
                 }
                 "ls" -> {

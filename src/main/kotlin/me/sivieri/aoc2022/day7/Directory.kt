@@ -9,20 +9,12 @@ data class Directory(
 
     fun size(): Int = subdirectories.sumOf { it.size() } + files.sumOf { it.size }
 
-    fun getDirectoryByName(name: String): Directory? =
-        if (name == this.name) this
-        else if (subdirectories.size == 0) null
-        else subdirectories
-            .mapNotNull { it.getDirectoryByName(name) }
-            .let { if (it.isEmpty()) null else it.first() }
+    fun getSubdirectoryByName(name: String): Directory? = subdirectories.find { it.name == name }
 
-    fun getFileByName(name: String): File? =
-        files.find { it.name == name } ?: subdirectories
-            .mapNotNull { it.getFileByName(name) }
-            .let { if (it.isEmpty()) null else it.first() }
+    fun getFileByName(name: String): File? = files.find { it.name == name }
 
     fun addSubdirIfNotExists(name: String): Directory {
-        if (getDirectoryByName(name) == null) subdirectories.add(
+        if (getSubdirectoryByName(name) == null) subdirectories.add(
             Directory(
                 name,
                 this,
