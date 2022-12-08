@@ -1,6 +1,7 @@
 package me.sivieri.aoc2022.day8
 
 import me.sivieri.aoc2022.crossProduct
+import me.sivieri.aoc2022.multiplyBy
 
 class Forest(input: List<String>) {
 
@@ -18,6 +19,27 @@ class Forest(input: List<String>) {
                 elements.all { it < current }
             }
         } + xSize + xSize + ySize + ySize - 4 // borders
+
+    fun getMaxScenicScore(): Long = (0 until xSize)
+        .toList()
+        .crossProduct((0 until ySize).toList())
+        .maxOf {  (x, y) ->
+            val current = trees[y][x]
+            Direction
+                .values()
+                .toList()
+                .multiplyBy {
+                    val elements = when (it) {
+                        Direction.TOP -> getAllElements(x, y, it).reversed()
+                        Direction.BOTTOM -> getAllElements(x, y, it)
+                        Direction.LEFT -> getAllElements(x, y, it).reversed()
+                        Direction.RIGHT -> getAllElements(x, y, it)
+                    }
+                    val filtered = elements.takeWhile { it < current }
+                    if (filtered.size == elements.size) filtered.size.toLong()
+                    else filtered.size + 1L
+                }
+        }
 
     fun getAllElements(x: Int, y: Int, direction: Direction): List<Int> = when (direction) {
         Direction.TOP -> trees.subList(0, y).map { it[x] }

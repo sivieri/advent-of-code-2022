@@ -40,4 +40,9 @@ class ForestTest {
         assertThat(forest.countVisibleTrees(), `is`(21))
     }
 
+    @Test
+    fun `part 2 example`() {
+        assertThat(forest.getMaxScenicScore(), `is`(8))
+    }
+
 }
