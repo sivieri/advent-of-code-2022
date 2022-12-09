@@ -1,9 +1,19 @@
 package me.sivieri.aoc2022.common
 
+import kotlin.math.pow
+
 data class Coordinate2D(
     val x: Int,
     val y: Int
 ) {
+
+    fun distance(other: Coordinate2D): Int =
+        kotlin.math.sqrt((other.x - x).toDouble().pow(2) + (other.y - y).toDouble().pow(2) + (other.y - y).toDouble().pow(2)).toInt()
+
+    override fun toString(): String {
+        return "($x, $y)"
+    }
+
 
     companion object {
 
