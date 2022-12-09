@@ -108,8 +108,22 @@ class RopeBridgeTest {
         ropeBridge.move(input)
         assertThat(ropeBridge.head, `is`(Coordinate2D(2, 2)))
         assertThat(ropeBridge.tail, `is`(Coordinate2D(1, 2)))
+        assertThat(ropeBridge.visitedTail.distinct(), containsInAnyOrder(
+            Coordinate2D(0, 0),
+            Coordinate2D(1, 0),
+            Coordinate2D(2, 0),
+            Coordinate2D(3, 0),
+            Coordinate2D(4, 1),
+            Coordinate2D(1, 2),
+            Coordinate2D(2, 2),
+            Coordinate2D(3, 2),
+            Coordinate2D(4, 2),
+            Coordinate2D(3, 3),
+            Coordinate2D(4, 3),
+            Coordinate2D(2, 4),
+            Coordinate2D(3, 4)
+        ))
         assertThat(ropeBridge.countTailPositions(), `is`(13))
     }
-
 
 }

@@ -8,7 +8,7 @@ class RopeBridge(
     var tail: Coordinate2D = Coordinate2D(0, 0)
 ) {
 
-    private val visitedTail: MutableList<Coordinate2D> = mutableListOf()
+    val visitedTail: MutableList<Coordinate2D> = mutableListOf(tail.copy())
 
     init {
         assert(tail.cellDistance(head) <= 2)
@@ -28,8 +28,8 @@ class RopeBridge(
                 0 -> { }
                 1 -> { }
                 2 -> {
-                    visitedTail.add(tail.copy())
                     tail = tail.moveOneCellTowards(head)
+                    visitedTail.add(tail.copy())
                 }
                 else -> throw IllegalArgumentException("Tail $tail too distant from head $head!")
             }
