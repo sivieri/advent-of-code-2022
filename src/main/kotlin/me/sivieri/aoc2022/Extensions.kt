@@ -94,3 +94,6 @@ internal fun <T> List<T>.tail(): List<T> = when (this.size) {
     1 -> emptyList()
     else -> this.subList(1, this.size)
 }
+
+internal fun <K, V> Map<K, V>.findByValue(value: V): Map.Entry<K, V>? =
+    this.entries.find { it.value == value }

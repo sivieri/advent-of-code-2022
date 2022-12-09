@@ -10,7 +10,7 @@ object Main2 {
             .readInputToList(9)
             .filter { it.isNotBlank() }
             .map { RopeMovement.parseLine(it) }
-        val bridge = LongRopeBridge()
+        val bridge = LongRopeBridge(9)
         bridge.move(data)
         val result = bridge.countTailPositions()
         println(result)

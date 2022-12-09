@@ -19,7 +19,7 @@ class LongRopeBridgeTest {
             L 5
             R 2
         """.trimIndent().split("\n").map { RopeMovement.parseLine(it.trim()) }
-        val ropeBridge = LongRopeBridge(Coordinate2D(0, 0), Coordinate2D(0, 0))
+        val ropeBridge = LongRopeBridge(9, Coordinate2D(0, 0), Coordinate2D(0, 0))
         ropeBridge.move(input)
         MatcherAssert.assertThat(ropeBridge.countTailPositions(), `is`(1))
     }
@@ -36,7 +36,7 @@ class LongRopeBridgeTest {
             L 25
             U 20
         """.trimIndent().split("\n").map { RopeMovement.parseLine(it.trim()) }
-        val ropeBridge = LongRopeBridge(Coordinate2D(0, 0), Coordinate2D(0, 0))
+        val ropeBridge = LongRopeBridge(9, Coordinate2D(0, 0), Coordinate2D(0, 0))
         ropeBridge.move(input)
         MatcherAssert.assertThat(ropeBridge.countTailPositions(), `is`(36))
     }
