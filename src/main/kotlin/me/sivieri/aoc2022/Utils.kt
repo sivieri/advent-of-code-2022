@@ -12,6 +12,7 @@ object Utils {
         Files
             .lines(Path.of(this::class.java.getResource("/day$day/input.txt").toURI()))
             .toList()
+            .filter { it.isNotBlank() }
 
     fun <T> readInputBlocks(
         day: Int,
