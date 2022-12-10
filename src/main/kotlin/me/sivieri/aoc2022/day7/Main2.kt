@@ -7,8 +7,8 @@ object Main2 {
     @JvmStatic
     fun main(args: Array<String>) {
         val data = Utils.readInputToList(7)
-        val interpreter = Interpreter(data)
-        val result = interpreter.findSizeOfSmallestToDelete(70000000, 30000000)
+        val fileSystemInterpreter = FileSystemInterpreter(data)
+        val result = fileSystemInterpreter.findSizeOfSmallestToDelete(70000000, 30000000)
         println(result)
     }
 

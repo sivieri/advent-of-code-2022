@@ -2,7 +2,7 @@ package me.sivieri.aoc2022.day7
 
 import me.sivieri.aoc2022.tail
 
-class Interpreter(
+class FileSystemInterpreter(
     input: List<String>
 ) {
 

@@ -4,7 +4,7 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
 
-class InterpreterTest {
+class FileSystemInterpreterTest {
 
     @Test
     fun `part 1 example tree generation`() {
@@ -33,7 +33,7 @@ class InterpreterTest {
             5626152 d.ext
             7214296 k
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
+        val fileSystemInterpreter = FileSystemInterpreter(input)
         val root = Directory("/", null, mutableListOf(), mutableListOf(
             File("b.txt", 14848514),
             File("c.dat", 8504156)
@@ -55,8 +55,8 @@ class InterpreterTest {
             File("i", 584)
         ))
         a.subdirectories.add(e)
-        println(interpreter.root)
-        assertThat(interpreter.root, `is`(root))
+        println(fileSystemInterpreter.root)
+        assertThat(fileSystemInterpreter.root, `is`(root))
     }
 
     @Test
@@ -91,7 +91,7 @@ class InterpreterTest {
             $ ls
             112 l
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
+        val fileSystemInterpreter = FileSystemInterpreter(input)
         val root = Directory("/", null, mutableListOf(), mutableListOf(
             File("b.txt", 14848514),
             File("c.dat", 8504156)
@@ -118,8 +118,8 @@ class InterpreterTest {
             File("l", 112)
         ))
         d.subdirectories.add(eUnderD)
-        println(interpreter.root)
-        assertThat(interpreter.root, `is`(root))
+        println(fileSystemInterpreter.root)
+        assertThat(fileSystemInterpreter.root, `is`(root))
     }
 
     @Test
@@ -149,8 +149,8 @@ class InterpreterTest {
             5626152 d.ext
             7214296 k
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
-        assertThat(interpreter.findTotalSizeOfAtMost(100000), `is`(95437))
+        val fileSystemInterpreter = FileSystemInterpreter(input)
+        assertThat(fileSystemInterpreter.findTotalSizeOfAtMost(100000), `is`(95437))
     }
 
     @Test
@@ -185,8 +185,8 @@ class InterpreterTest {
             $ ls
             112 l
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
-        assertThat(interpreter.findTotalSizeOfAtMost(100000), `is`(96061))
+        val fileSystemInterpreter = FileSystemInterpreter(input)
+        assertThat(fileSystemInterpreter.findTotalSizeOfAtMost(100000), `is`(96061))
     }
 
     @Test
@@ -221,9 +221,9 @@ class InterpreterTest {
             $ ls
             112 l
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
-        assertThat(interpreter.root.countAllFiles(), `is`(12))
-        assertThat(interpreter.root.countAllDirectories(), `is`(5))
+        val fileSystemInterpreter = FileSystemInterpreter(input)
+        assertThat(fileSystemInterpreter.root.countAllFiles(), `is`(12))
+        assertThat(fileSystemInterpreter.root.countAllDirectories(), `is`(5))
     }
 
     @Test
@@ -253,8 +253,8 @@ class InterpreterTest {
             5626152 d.ext
             7214296 k
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
-        assertThat(interpreter.root.size(), `is`(48381165))
+        val fileSystemInterpreter = FileSystemInterpreter(input)
+        assertThat(fileSystemInterpreter.root.size(), `is`(48381165))
     }
 
     @Test
@@ -284,8 +284,8 @@ class InterpreterTest {
             5626152 d.ext
             7214296 k
         """.trimIndent().split("\n").map { it.trim() }
-        val interpreter = Interpreter(input)
-        assertThat(interpreter.findSizeOfSmallestToDelete(70000000, 30000000), `is`(24933642))
+        val fileSystemInterpreter = FileSystemInterpreter(input)
+        assertThat(fileSystemInterpreter.findSizeOfSmallestToDelete(70000000, 30000000), `is`(24933642))
     }
 
 }
