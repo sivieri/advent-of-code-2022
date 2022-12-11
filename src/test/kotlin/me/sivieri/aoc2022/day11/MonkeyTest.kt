@@ -52,8 +52,8 @@ class MonkeyTest {
                 If false: throw to monkey 3
         """.trimIndent()
         val monkey = Monkey.parse(input)
-        val result = monkey.evaluateItem()
-        assertThat(result, `is`(Pair(500, 3)))
+        val result = monkey.evaluateItem(3, 19)
+        assertThat(result, `is`(Pair(500L, 3)))
     }
 
 }

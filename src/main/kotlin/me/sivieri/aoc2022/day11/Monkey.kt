@@ -6,33 +6,35 @@ import java.util.*
 
 data class Monkey(
     val id: Int,
-    val items: ArrayDeque<Int>,
+    val items: ArrayDeque<Long>,
     val operation: String,
-    val test: Int,
+    val test: Long,
     val trueResponse: Int,
     val falseResponse: Int
 ) {
 
-    fun addItem(item: Int) {
+    fun addItem(item: Long) {
         items.addLast(item)
     }
 
-    fun evaluateItem(): Pair<Int, Int> {
+    fun evaluateItem(worryDivider: Int?, mcm: Long): Pair<Long, Int> {
         if (items.isEmpty()) throw IllegalStateException("Cannot evaluate without items")
         val item = items.removeFirst()
-        val worryLevel = performOperation(item) / 3
-        return if (worryLevel % test == 0) Pair(worryLevel, trueResponse)
+        val result = performOperation(item)
+        val worryLevel = if (worryDivider != null) result / worryDivider
+        else result % mcm
+        return if (worryLevel % test == 0L) Pair(worryLevel, trueResponse)
         else Pair(worryLevel, falseResponse)
     }
 
     fun checkEvaluate(): Boolean = !items.isEmpty()
 
-    private fun performOperation(item: Int): Int {
+    private fun performOperation(item: Long): Long {
         val expression = ExpressionBuilder(operation)
             .variable("old")
             .build()
             .setVariable("old", item.toDouble())
-        return expression.evaluate().toInt()
+        return expression.evaluate().toLong()
     }
 
     companion object {
@@ -54,7 +56,7 @@ data class Monkey(
             val items = itemsReges
                 .matchEntire(lines[1])
                 ?.destructured
-                ?.let { (items) -> items.split(", ").map { it.toInt() } }
+                ?.let { (items) -> items.split(", ").map { it.toLong() } }
                 ?: throw IllegalArgumentException("Unable to parse items from ${lines[1]}")
             val operation = operationRegex
                 .matchEntire(lines[2])
@@ -64,7 +66,7 @@ data class Monkey(
             val test = testRegex
                 .matchEntire(lines[3])
                 ?.destructured
-                ?.let { (test) -> test.toInt() }
+                ?.let { (test) -> test.toLong() }
                 ?: throw IllegalArgumentException("Unable to parse test from ${lines[3]}")
             val trueResponse = trueResponseRegex
                 .matchEntire(lines[4])
