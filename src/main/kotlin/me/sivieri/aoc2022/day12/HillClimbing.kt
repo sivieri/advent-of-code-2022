@@ -3,6 +3,7 @@ package me.sivieri.aoc2022.day12
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleDirectedGraph
+import java.lang.IllegalStateException
 
 class HillClimbing(input: List<String>) {
 
