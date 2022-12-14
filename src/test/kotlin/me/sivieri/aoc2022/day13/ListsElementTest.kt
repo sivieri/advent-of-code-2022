@@ -256,4 +256,68 @@ class ListsElementTest {
         assertThat(parsed, `is`(expected))
     }
 
+    @Test
+    fun `pair 1`() {
+        val a = ListsElement.parse("[1,1,3,1,1]")
+        val b = ListsElement.parse("[1,1,5,1,1]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(true))
+    }
+
+    @Test
+    fun `pair 2`() {
+        val a = ListsElement.parse("[[1],[2,3,4]]")
+        val b = ListsElement.parse("[[1],4]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(true))
+    }
+
+    @Test
+    fun `pair 3`() {
+        val a = ListsElement.parse("[9]")
+        val b = ListsElement.parse("[[8,7,6]]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(false))
+    }
+
+    @Test
+    fun `pair 4`() {
+        val a = ListsElement.parse("[[4,4],4,4]")
+        val b = ListsElement.parse("[[4,4],4,4,4]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(true))
+    }
+
+    @Test
+    fun `pair 5`() {
+        val a = ListsElement.parse("[7,7,7,7]")
+        val b = ListsElement.parse("[7,7,7]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(false))
+    }
+
+    @Test
+    fun `pair 6`() {
+        val a = ListsElement.parse("[]")
+        val b = ListsElement.parse("[3]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(true))
+    }
+
+    @Test
+    fun `pair 7`() {
+        val a = ListsElement.parse("[[[]]]")
+        val b = ListsElement.parse("[[]]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(false))
+    }
+
+    @Test
+    fun `pair 8`() {
+        val a = ListsElement.parse("[1,[2,[3,[4,[5,6,7]]]],8,9]")
+        val b = ListsElement.parse("[1,[2,[3,[4,[5,6,0]]]],8,9]")
+        val result = ListsElement.checkOrder(a, b)
+        assertThat(result, `is`(false))
+    }
+
 }

@@ -8,7 +8,7 @@ object Main2 {
     fun main(args: Array<String>) {
         val data = Utils.readInputBlocks(13) { it }
         val lc = ListsComparison(data)
-        val result = lc.sumRightPairs()
+        val result = lc.divisorsOrder()
         println(result)
     }
 
