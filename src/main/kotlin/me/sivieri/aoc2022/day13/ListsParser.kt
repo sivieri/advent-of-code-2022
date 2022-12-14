@@ -1,6 +1,5 @@
 package me.sivieri.aoc2022.day13
 
-import me.sivieri.aoc2022.common.Either
 import me.sivieri.aoc2022.common.Left
 import me.sivieri.aoc2022.common.Right
 

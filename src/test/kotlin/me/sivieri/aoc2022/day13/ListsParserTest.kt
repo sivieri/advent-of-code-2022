@@ -204,4 +204,30 @@ class ListsParserTest {
         assertThat(parsed, `is`(expected))
     }
 
+    @Test
+    fun `parse line 16`() {
+        val line = "[1,[2,[3,[4,[5,6,0]]]],8,9]"
+        val parsed = ListsParser.parse(line)
+        val expected = ListsElement(mutableMapOf(
+            0 to Left(1),
+            1 to Right(ListsElement(mutableMapOf(
+                0 to Left(2),
+                1 to Right(ListsElement(mutableMapOf(
+                    0 to Left(3),
+                    1 to Right(ListsElement(mutableMapOf(
+                        0 to Left(4),
+                        1 to Right(ListsElement(mutableMapOf(
+                            0 to Left(5),
+                            1 to Left(6),
+                            2 to Left(0)
+                        )))
+                    )))
+                )))
+            ))),
+            2 to Left(8),
+            3 to Left(9)
+        ))
+        assertThat(parsed, `is`(expected))
+    }
+
 }
