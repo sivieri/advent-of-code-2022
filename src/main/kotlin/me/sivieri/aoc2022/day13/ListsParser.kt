@@ -11,17 +11,24 @@ object ListsParser {
         val root = ListsElement(mutableMapOf())
         var i = index
         var element = 0
+        var buffer = StringBuffer()
         while (i < line.length) {
             when (line[i]) {
-                ',' -> { /* noop */}
+                ',' -> {
+                    if (buffer.isNotEmpty()) root.elements[element++] = Left(buffer.toString().toInt())
+                    buffer = StringBuffer()
+                }
                 '[' -> {
                     val (newIndex, e) = parse0(line, i + 1, false)
                     root.elements[element++] = Right(e)
                     i = newIndex
                 }
-                ']' -> { return if (isRoot) Pair(i, (root.elements[0]!! as Right).value) else Pair(i, root) }
+                ']' -> {
+                    if (buffer.isNotEmpty()) root.elements[element] = Left(buffer.toString().toInt())
+                    return if (isRoot) Pair(i, (root.elements[0]!! as Right).value) else Pair(i, root)
+                }
                 else -> {
-                    root.elements[element++] = Left(line[i].toString().toInt())
+                    buffer.append(line[i])
                 }
             }
             i++
