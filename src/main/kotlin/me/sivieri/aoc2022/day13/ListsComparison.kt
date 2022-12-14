@@ -34,15 +34,15 @@ class ListsComparison(blocks: List<String>) {
                             else if (a1.value > b1.value) return false
                         }
                         a1 is Right && b1 is Right -> {
-                            val v = checkOrder(a1.value, b1.value)
+                            val v = checkOrder0(a1.value, b1.value)
                             if (v != null) return v
                         }
                         a1 is Left && b1 is Right -> {
-                            val v = checkOrder(ListsElement(mutableMapOf(0 to a1)), b1.value)
+                            val v = checkOrder0(ListsElement(mutableMapOf(0 to a1)), b1.value)
                             if (v != null) return v
                         }
                         a1 is Right && b1 is Left -> {
-                            val v = checkOrder(a1.value, ListsElement(mutableMapOf(0 to b1)))
+                            val v = checkOrder0(a1.value, ListsElement(mutableMapOf(0 to b1)))
                             if (v != null) return v
                         }
                     }
