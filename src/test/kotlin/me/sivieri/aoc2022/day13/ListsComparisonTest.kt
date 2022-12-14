@@ -8,64 +8,64 @@ class ListsComparisonTest {
 
     @Test
     fun `pair 1`() {
-        val a = ListsParser.parse("[1,1,3,1,1]")
-        val b = ListsParser.parse("[1,1,5,1,1]")
+        val a = ListsElement.parse("[1,1,3,1,1]")
+        val b = ListsElement.parse("[1,1,5,1,1]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(true))
     }
 
     @Test
     fun `pair 2`() {
-        val a = ListsParser.parse("[[1],[2,3,4]]")
-        val b = ListsParser.parse("[[1],4]")
+        val a = ListsElement.parse("[[1],[2,3,4]]")
+        val b = ListsElement.parse("[[1],4]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(true))
     }
 
     @Test
     fun `pair 3`() {
-        val a = ListsParser.parse("[9]")
-        val b = ListsParser.parse("[[8,7,6]]")
+        val a = ListsElement.parse("[9]")
+        val b = ListsElement.parse("[[8,7,6]]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(false))
     }
 
     @Test
     fun `pair 4`() {
-        val a = ListsParser.parse("[[4,4],4,4]")
-        val b = ListsParser.parse("[[4,4],4,4,4]")
+        val a = ListsElement.parse("[[4,4],4,4]")
+        val b = ListsElement.parse("[[4,4],4,4,4]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(true))
     }
 
     @Test
     fun `pair 5`() {
-        val a = ListsParser.parse("[7,7,7,7]")
-        val b = ListsParser.parse("[7,7,7]")
+        val a = ListsElement.parse("[7,7,7,7]")
+        val b = ListsElement.parse("[7,7,7]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(false))
     }
 
     @Test
     fun `pair 6`() {
-        val a = ListsParser.parse("[]")
-        val b = ListsParser.parse("[3]")
+        val a = ListsElement.parse("[]")
+        val b = ListsElement.parse("[3]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(true))
     }
 
     @Test
     fun `pair 7`() {
-        val a = ListsParser.parse("[[[]]]")
-        val b = ListsParser.parse("[[]]")
+        val a = ListsElement.parse("[[[]]]")
+        val b = ListsElement.parse("[[]]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(false))
     }
 
     @Test
     fun `pair 8`() {
-        val a = ListsParser.parse("[1,[2,[3,[4,[5,6,7]]]],8,9]")
-        val b = ListsParser.parse("[1,[2,[3,[4,[5,6,0]]]],8,9]")
+        val a = ListsElement.parse("[1,[2,[3,[4,[5,6,7]]]],8,9]")
+        val b = ListsElement.parse("[1,[2,[3,[4,[5,6,0]]]],8,9]")
         val result = ListsComparison.checkOrder(a, b)
         assertThat(result, `is`(false))
     }

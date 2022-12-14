@@ -9,16 +9,18 @@ class ListsComparison(blocks: List<String>) {
 
     private val pairs = blocks.map {
         val (one, two) = it.trim().split("\n", limit = 2)
-        Pair(ListsParser.parse(one), ListsParser.parse(two))
+        Pair(ListsElement.parse(one), ListsElement.parse(two))
     }
 
     fun sumRightPairs(): Int = pairs
         .zipWithIndex { it + 1 }
-        .filter { checkOrder(it.second.first, it.second.second)!! }
+        .filter { checkOrder(it.second.first, it.second.second) }
         .sumOf { it.first }
 
     companion object {
-        fun checkOrder(a: ListsElement, b: ListsElement): Boolean? {
+        fun checkOrder(a: ListsElement, b: ListsElement): Boolean = checkOrder0(a, b)!!
+
+        private fun checkOrder0(a: ListsElement, b: ListsElement): Boolean? {
             val max = max(a.elements.size, b.elements.size)
             (0 until max).forEach { i ->
                 if (a.elements.size <= i) return true
