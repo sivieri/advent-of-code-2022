@@ -10,21 +10,24 @@ class RegolithCave(input: List<String>) {
             Coordinate2D(x.toInt(), y.toInt())
         }
     }
+    private val minX = paths.flatten().minOf { it.x }
+    private val minY = paths.flatten().minOf { it.y }
     private val maxX = paths.flatten().maxOf { it.x } + 1
     private val maxY = paths.flatten().maxOf { it.y } + 1
-    private val matrix = List(maxY) { MutableList(maxX) { AIR } }
+    private val matrix = List(maxY - minY) { MutableList(maxX - minX) { AIR } }
 
     init {
         paths.forEach { path ->
             path.zipWithNext().forEach { (start, end) ->
-                if (start.x != end.x) {
-                    (start.x..end.x).forEach { x ->
-                        matrix[start.y][x] = ROCK
+                val (actualStart, actualEnd) = listOf(start, end).sorted()
+                if (actualStart.x != actualEnd.x) {
+                    (actualStart.x..actualEnd.x).forEach { x ->
+                        matrix[actualStart.y - minY][x - minX] = ROCK
                     }
                 }
                 else {
-                    (start.y..end.y).forEach { y ->
-                        matrix[y][start.x] = ROCK
+                    (actualStart.y..actualEnd.y).forEach { y ->
+                        matrix[y - minY][actualStart.x - minX] = ROCK
                     }
                 }
             }
