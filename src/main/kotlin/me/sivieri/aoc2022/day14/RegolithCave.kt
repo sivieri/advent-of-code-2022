@@ -1,6 +1,7 @@
 package me.sivieri.aoc2022.day14
 
 import me.sivieri.aoc2022.common.Coordinate2D
+import me.sivieri.aoc2022.zipWithIndex
 
 class RegolithCave(input: List<String>) {
 
@@ -19,15 +20,18 @@ class RegolithCave(input: List<String>) {
     init {
         paths.forEach { path ->
             path.zipWithNext().forEach { (start, end) ->
-                val (actualStart, actualEnd) = listOf(start, end).sorted()
-                if (actualStart.x != actualEnd.x) {
-                    (actualStart.x..actualEnd.x).forEach { x ->
-                        matrix[actualStart.y - minY][x - minX] = ROCK
+                if (start.x != end.x) {
+                    val actualStart = if (start.x < end.x) start.x else end.x
+                    val actualEnd = if (start.x < end.x) end.x else start.x
+                    (actualStart..actualEnd).forEach { x ->
+                        matrix[start.y - minY][x - minX] = ROCK
                     }
                 }
                 else {
-                    (actualStart.y..actualEnd.y).forEach { y ->
-                        matrix[y - minY][actualStart.x - minX] = ROCK
+                    val actualStart = if (start.y < end.y) start.y else end.y
+                    val actualEnd = if (start.y < end.y) end.y else start.y
+                    (actualStart..actualEnd).forEach { y ->
+                        matrix[y - minY][start.x - minX] = ROCK
                     }
                 }
             }
@@ -68,9 +72,11 @@ class RegolithCave(input: List<String>) {
 
     private fun isValid(c: Coordinate2D): Boolean = !(c.x < minX || c.x >= maxX || c.y < minY || c.y >= maxY)
 
-    fun stringRepresentation(): String = matrix.joinToString("\n") { line ->
-        line.joinToString("")
-    }
+    fun stringRepresentation(): String = matrix
+        .zipWithIndex { it }
+        .joinToString("\n") { (index, line) ->
+            index.toString().padStart(3, '0') + " " + line.joinToString("")
+        }
 
     companion object {
         private const val AIR = '.'

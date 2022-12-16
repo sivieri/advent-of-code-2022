@@ -8,7 +8,10 @@ object Main1 {
     fun main(args: Array<String>) {
         val data = Utils.readInputToList(14)
         val cave = RegolithCave(data)
+        println(cave.stringRepresentation())
         val result = cave.fillSandUnits()
+        println()
+        println(cave.stringRepresentation())
         println(result)
     }
 
