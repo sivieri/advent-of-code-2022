@@ -3,7 +3,7 @@ package me.sivieri.aoc2022.day14
 import me.sivieri.aoc2022.common.Coordinate2D
 import me.sivieri.aoc2022.zipWithIndex
 
-class RegolithCave(input: List<String>) {
+class RegolithCave(input: List<String>, withFloor: Boolean = false) {
 
     private val paths = input.map { s ->
         s.split(" -> ").map { p ->
@@ -11,11 +11,12 @@ class RegolithCave(input: List<String>) {
             Coordinate2D(x.toInt(), y.toInt())
         }
     }
-    private val minX = paths.flatten().minOf { it.x }
+    private val floorAddition = if (withFloor) 2 else 0
+    private var minX = paths.flatten().minOf { it.x }
     private val minY = sandInsertion.y
-    private val maxX = paths.flatten().maxOf { it.x } + 1
-    private val maxY = paths.flatten().maxOf { it.y } + 1
-    private val matrix = List(maxY - minY) { MutableList(maxX - minX) { AIR } }
+    private var maxX = paths.flatten().maxOf { it.x } + 1
+    private val maxY = paths.flatten().maxOf { it.y } + 1 + floorAddition
+    private var matrix = List(maxY - minY) { MutableList(maxX - minX) { AIR } }
 
     init {
         paths.forEach { path ->
@@ -37,6 +38,7 @@ class RegolithCave(input: List<String>) {
             }
         }
         matrix[sandInsertion.y - minY][sandInsertion.x - minX] = INS
+        if (withFloor) (0 until (maxX - minX)).forEach { x -> matrix[maxY - minY - 1][x] = ROCK }
     }
 
     fun addSandUnit(): Boolean {
@@ -64,10 +66,60 @@ class RegolithCave(input: List<String>) {
         return result
     }
 
+    fun addSandUnitToTheLimit(): Boolean {
+        var result = true
+        var repeat = false
+        var prev = Coordinate2D(sandInsertion.x, sandInsertion.y - 1)
+        var cur = sandInsertion.copy()
+        while (prev != cur || repeat) {
+            repeat = false
+            prev = cur
+            cur = when {
+                !isValid(Coordinate2D(cur.x - 1, cur.y + 1)) -> {
+                    enlargeMatrix(left = true)
+                    repeat = true
+                    cur // repeat
+                }
+                !isValid(Coordinate2D(cur.x + 1, cur.y + 1)) -> {
+                    enlargeMatrix(left = false) // right
+                    repeat = true
+                    cur // repeat
+                }
+                isValid(Coordinate2D(cur.x, cur.y + 1)) && matrix[cur.y - minY + 1][cur.x - minX] == AIR -> Coordinate2D(cur.x, cur.y + 1)
+                isValid(Coordinate2D(cur.x - 1, cur.y + 1)) && matrix[cur.y - minY + 1][cur.x - minX - 1] == AIR -> Coordinate2D(cur.x - 1, cur.y + 1)
+                isValid(Coordinate2D(cur.x + 1, cur.y + 1)) && matrix[cur.y - minY + 1][cur.x - minX + 1] == AIR -> Coordinate2D(cur.x + 1, cur.y + 1)
+                else -> {
+                    matrix[cur.y - minY][cur.x - minX] = SAND
+                    if (cur == sandInsertion) result = false
+                    cur
+                }
+            }
+        }
+        return result
+    }
+
+    fun enlargeMatrix(left: Boolean) {
+        matrix = matrix.mapIndexed { index, row ->
+            val c = if (index == maxY - minY - 1) ROCK
+            else AIR
+            val newRow = if (left) (listOf(c) + row).toMutableList()
+            else row.plus(c).toMutableList()
+            newRow
+        }
+        if (left) minX--
+        else maxX++
+    }
+
     fun fillSandUnits(): Int {
         var i = 0
         while (addSandUnit()) i++
         return i
+    }
+
+    fun reallyFillSandUnits(): Int {
+        var i = 0
+        while (addSandUnitToTheLimit()) i++
+        return i + 1
     }
 
     private fun isValid(c: Coordinate2D): Boolean = !(c.x < minX || c.x >= maxX || c.y < minY || c.y >= maxY)
