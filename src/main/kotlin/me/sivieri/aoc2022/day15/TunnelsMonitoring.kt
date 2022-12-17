@@ -50,6 +50,29 @@ class TunnelsMonitoring(input: List<String>) {
         }
     }
 
+    fun findDistressBeacon(min: Int, max: Int): Int {
+        val data = sensorsWithBeacons.flatMap {
+            listOf(it.key to SENSOR, it.value to BEACON)
+        }.toMap()
+        val distances = sensorsWithBeacons.mapValues { it.key.manhattanDistance(it.value) }
+        val result = (min..max).firstNotNullOf { y ->
+            if (y % 10000 == 0) println(y)
+            var found = false
+            var cur = min
+            while (cur <= max && !found) {
+                val c = Coordinate2D(cur, y)
+                found = data[c] == null && distances.all { (sensor, d) ->
+                    val manhattanDistance = c.manhattanDistance(sensor)
+                    data[c] == null && manhattanDistance > d
+                }
+                cur++
+            }
+            if (found) Coordinate2D(cur - 1, y)
+            else null
+        }
+        return result.x * 4000000 + result.y
+    }
+
     fun stringRepresentation(): String =
         (minY..maxY).joinToString("\n") { y ->
             (minX..maxX).joinToString("") { x ->
