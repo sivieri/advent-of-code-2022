@@ -51,26 +51,36 @@ class TunnelsMonitoring(input: List<String>) {
     }
 
     fun findDistressBeacon(min: Int, max: Int): Int {
-        val data = sensorsWithBeacons.flatMap {
-            listOf(it.key to SENSOR, it.value to BEACON)
-        }.toMap()
-        val distances = sensorsWithBeacons.mapValues { it.key.manhattanDistance(it.value) }
-        val result = (min..max).firstNotNullOf { y ->
-            if (y % 10000 == 0) println(y)
-            var found = false
-            var cur = min
-            while (cur <= max && !found) {
-                val c = Coordinate2D(cur, y)
-                found = data[c] == null && distances.all { (sensor, d) ->
-                    val manhattanDistance = c.manhattanDistance(sensor)
-                    data[c] == null && manhattanDistance > d
-                }
-                cur++
-            }
-            if (found) Coordinate2D(cur - 1, y)
-            else null
+        sensorsWithBeacons.forEach { (sensor, beacon) ->
+            val d = sensor.manhattanDistance(beacon)
+            val n = findAllNeighbors(sensor, d + 1)
+            val others = sensors.minus(sensor)
+            val r = n.find { c -> others.all { c.manhattanDistance(it) > d } }
+            if (r != null) return r.x * 4000000 + r.y
         }
-        return result.x * 4000000 + result.y
+        throw IllegalArgumentException("Not found")
+    }
+
+    private fun findAllNeighbors(center: Coordinate2D, distance: Int): List<Coordinate2D> {
+        val right = center.copy(x = center.x + distance)
+        val left = center.copy(x = center.x - distance)
+        val top = center.copy(y = center.y + distance)
+        val bottom = center.copy(y = center.y - distance)
+        val leftTop = (left.x..top.x).flatMap { x ->
+            (left.y..top.y).map { y -> Coordinate2D(x, y) }
+        }
+        val rightTop = (top.x..right.x).flatMap { x ->
+            (right.y..top.y).map { y -> Coordinate2D(x, y) }
+        }
+        val leftBottom = (left.x..bottom.x).flatMap { x ->
+            (bottom.y..left.y).map { y -> Coordinate2D(x, y) }
+        }
+        val rightBottom = (bottom.x..right.x).flatMap { x ->
+            (bottom.y..right.y).map { y -> Coordinate2D(x, y) }
+        }
+        return (leftTop + leftBottom + rightTop + rightBottom + listOf(right, left, top, bottom))
+            .filterNot { sensors.contains(it) || beacons.contains(it) }
+            .distinct()
     }
 
     fun stringRepresentation(): String =
