@@ -1,5 +1,6 @@
 package me.sivieri.aoc2022.common
 
+import kotlin.math.abs
 import kotlin.math.pow
 
 data class Coordinate2D(
@@ -9,6 +10,9 @@ data class Coordinate2D(
 
     fun distance(other: Coordinate2D): Int =
         kotlin.math.sqrt((other.x - x).toDouble().pow(2) + (other.y - y).toDouble().pow(2) + (other.y - y).toDouble().pow(2)).toInt()
+
+    fun manhattanDistance(other: Coordinate2D): Int =
+        abs(this.x - other.x) + abs(this.y - other.y)
 
     override fun compareTo(other: Coordinate2D): Int = when {
         ORIGIN.distance(this) < ORIGIN.distance(other) -> -1
