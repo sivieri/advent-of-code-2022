@@ -39,6 +39,11 @@ internal fun <A, B> cartesianProduct(a: List<A>, b: List<B>): List<Pair<A, B>> =
 internal fun <A, B> Collection<A>.crossProduct(other: Collection<B>): List<Pair<A, B>> =
     this.flatMap { aElement -> other.map { bElement -> aElement to bElement } }
 
+internal fun <T> List<T>.combinations(): List<Pair<T, T>> =
+    (0 until this.size).flatMap { i ->
+        (i + 1 until this.size).map { j ->  Pair(this[i], this[j]) }
+    }
+
 internal fun <T> cartesianProductOfThree(
     a: Collection<T>,
     b: Collection<T>,
