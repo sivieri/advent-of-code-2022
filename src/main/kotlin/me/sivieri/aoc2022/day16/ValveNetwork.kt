@@ -1,12 +1,11 @@
 package me.sivieri.aoc2022.day16
 
 import me.sivieri.aoc2022.crossProduct
+import me.sivieri.aoc2022.removeFirstOrNull
 import org.jgrapht.alg.shortestpath.FloydWarshallShortestPaths
 import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleGraph
 import java.util.ArrayDeque
-import java.util.Queue
-import kotlin.math.max
 
 class ValveNetwork(input: List<String>) {
 
@@ -67,6 +66,42 @@ class ValveNetwork(input: List<String>) {
                 }
         }
         return maxFlows.values.max()
+    }
+
+    fun getMaxFlowWithHelp(): Int {
+        val maxFlows = mutableMapOf<String, Int>()
+        val queue = ArrayDeque<QueueStatus>()
+        queue.addLast(QueueStatus(Valve("AA", 0), 26, 0, emptySet()))
+        while (queue.isNotEmpty()) {
+            val status = queue.removeFirst()
+            costs[status.valve]!!
+                .filter { it.first.flowRate > 0 }
+                .forEach { (dest, cost) ->
+                    val updatedCost = status.remaining - cost - 1
+                    if (updatedCost > 0 && !status.openedValves.contains(dest)) {
+                        val newRelief = dest.flowRate * updatedCost + status.relief
+                        val updatedOpenedValves = status.openedValves.plus(dest)
+                        val s = updatedOpenedValves
+                            .map { it.name }
+                            .sorted()
+                            .joinToString(",")
+                        queue.add(QueueStatus(
+                            dest,
+                            updatedCost,
+                            newRelief,
+                            updatedOpenedValves
+                        ))
+                        if (!maxFlows.containsKey(s) || maxFlows[s]!! < newRelief) maxFlows[s] = newRelief
+                    }
+                }
+        }
+        val data = maxFlows
+            .keys
+            .map { it.split(",") }
+            .crossProduct(maxFlows.keys.map { it.split(",") })
+            .filter { it.first.intersect(it.second).isEmpty() }
+        return data
+            .maxOf { maxFlows[it.first.joinToString(",")]!! + maxFlows[it.second.joinToString(",")]!! }
     }
 
     companion object {

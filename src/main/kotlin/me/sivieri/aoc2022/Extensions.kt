@@ -5,7 +5,9 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.jgrapht.Graph
 import java.lang.IllegalArgumentException
+import java.util.ArrayDeque
 import java.util.Collections.swap
+import java.util.NoSuchElementException
 
 internal fun String.toIntList(): List<Int> = this.split(",").map { it.toInt() }
 
@@ -102,3 +104,11 @@ internal fun <T> List<T>.tail(): List<T> = when (this.size) {
 
 internal fun <K, V> Map<K, V>.findByValue(value: V): Map.Entry<K, V>? =
     this.entries.find { it.value == value }
+
+internal fun <T> ArrayDeque<T>.removeFirstOrNull(): T? =
+    try {
+        this.removeFirst()
+    }
+    catch (e: NoSuchElementException) {
+        null
+    }
