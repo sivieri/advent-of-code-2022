@@ -50,7 +50,7 @@ class TunnelsMonitoring(input: List<String>) {
         }
     }
 
-    fun findDistressBeacon(min: Int, max: Int): Int {
+    fun findDistressBeacon(min: Int, max: Int): Long {
         sensorsWithBeacons.entries.forEachIndexed { index, entry ->
             println("Sensor ${index + 1} of ${sensorsWithBeacons.size}")
             val d = entry.key.manhattanDistance(entry.value)
@@ -63,7 +63,7 @@ class TunnelsMonitoring(input: List<String>) {
                     coordinateDistance > beaconDistance
                 }
             }
-            if (r != null) return r.x * 4000000 + r.y
+            if (r != null) return r.x * 4000000L + r.y
         }
         throw IllegalArgumentException("Not found")
     }
@@ -71,15 +71,12 @@ class TunnelsMonitoring(input: List<String>) {
     fun findAllNeighbors(center: Coordinate2D, distance: Int, min: Int, max: Int): List<Coordinate2D> {
         val right = center.copy(x = center.x + distance)
         val left = center.copy(x = center.x - distance)
-        val top = center.copy(y = center.y + distance)
-        val bottom = center.copy(y = center.y - distance)
-        val allNeighbors = (left.x..right.x)
-            .flatMap { x ->
-                (bottom.y..top.y).map { y ->
-                    Coordinate2D(x, y)
-                }
-            }
-            .filter { center.manhattanDistance(it) == distance }
+        val top = center.copy(y = center.y - distance)
+        val bottom = center.copy(y = center.y + distance)
+        val allNeighbors = (left.x..bottom.x).zip(left.y..bottom.y).map { Coordinate2D(it.first, it.second) }.union(
+        (left.x..top.x).zip(left.y downTo top.y).map { Coordinate2D(it.first, it.second) }).union(
+        (top.x..right.x).zip(top.y..right.y).map { Coordinate2D(it.first, it.second) }).union(
+        (bottom.x..right.x).zip(bottom.y downTo right.y).map { Coordinate2D(it.first, it.second) })
         return allNeighbors
             .filterNot { sensors.contains(it) || beacons.contains(it) }
             .filter { it.x in min..max && it.y in min..max }
