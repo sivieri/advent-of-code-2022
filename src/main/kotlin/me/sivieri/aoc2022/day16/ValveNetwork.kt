@@ -6,11 +6,12 @@ import org.jgrapht.graph.DefaultEdge
 import org.jgrapht.graph.SimpleGraph
 import java.util.ArrayDeque
 import java.util.Queue
+import kotlin.math.max
 
 class ValveNetwork(input: List<String>) {
 
     private val graph = SimpleGraph<Valve, DefaultEdge>(DefaultEdge::class.java)
-    private val costs: Map<Valve, List<Pair<Valve, Double>>>
+    private val costs: Map<Valve, List<Pair<Valve, Int>>>
 
     init {
         val parsed = input.map {
@@ -32,7 +33,7 @@ class ValveNetwork(input: List<String>) {
         val allPairs = valves.crossProduct(valves).filter { it.first != it.second }
         val fw = FloydWarshallShortestPaths(graph)
         costs = allPairs
-            .map { Triple(it.first, it.second, fw.getPathWeight(it.first, it.second)) }
+            .map { Triple(it.first, it.second, fw.getPathWeight(it.first, it.second).toInt()) }
             .groupBy { it.first }
             .map { it.key to it.value.map { Pair(it.second, it.third) } }
             .toMap()
@@ -43,7 +44,27 @@ class ValveNetwork(input: List<String>) {
         val queue = ArrayDeque<QueueStatus>()
         queue.addLast(QueueStatus(Valve("AA", 0), 30, 0, emptySet()))
         while (queue.isNotEmpty()) {
-
+            val status = queue.removeFirst()
+            costs[status.valve]!!
+                .filter { it.first.flowRate > 0 }
+                .forEach { (dest, cost) ->
+                    val updatedCost = status.remaining - cost - 1
+                    if (updatedCost >= 0 && !status.openedValves.contains(dest)) {
+                        val newRelief = dest.flowRate * updatedCost + status.relief
+                        val updatedOpenedValves = status.openedValves.plus(dest)
+                        val s = updatedOpenedValves
+                            .map { it.name }
+                            .sorted()
+                            .joinToString(",")
+                        queue.add(QueueStatus(
+                            dest,
+                            updatedCost,
+                            newRelief,
+                            updatedOpenedValves
+                        ))
+                        if (!maxFlows.containsKey(s) || maxFlows[s]!! < newRelief) maxFlows[s] = newRelief
+                    }
+                }
         }
         return maxFlows.values.max()
     }
