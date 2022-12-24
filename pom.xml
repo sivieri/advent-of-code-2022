@@ -19,41 +19,6 @@
         <hamcrest.version>2.2</hamcrest.version>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>cuebiq-repo</id>
-            <url>https://nexus.cuebiq.com/repository/maven-group/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <url>https://nexus.cuebiq.com/repository/maven-snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>nexus-releases</id>
-            <url>https://nexus.cuebiq.com/repository/maven-releases/</url>
-        </repository>
-    </distributionManagement>
-
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
