@@ -19,7 +19,7 @@ class TetrisBoard(
             move(piece, currentHeight, board)
             currentHeight = calculateNewHeight(board)
         }
-        return currentHeight
+        return currentHeight + 1
     }
 
     private fun move(
@@ -29,7 +29,7 @@ class TetrisBoard(
     ) {
         val start = origin(currentHeight)
         var position = piece.generateFigure(start)
-        var prev = position
+        var prev: List<Coordinate2D>
         var moving = true
         while (moving) {
             // wind move
@@ -56,18 +56,36 @@ class TetrisBoard(
 
     private fun canMoveDown(position: List<Coordinate2D>, board: List<MutableList<Char>>): Boolean =
         position
-            .map { Coordinate2D(it.x, it.y - 1) }
+            .filter { it.y == position.minOf { it.y } }
+            .map { generateCoordinateWithinLimits(it, 0, -1, WIDTH, board.size) }
             .all { board[it.y][it.x] == AIR }
 
     private fun canMoveLateral(position: List<Coordinate2D>, move: Char, board: List<MutableList<Char>>): Boolean =
         position
-            .map { if (move == RIGHT) Coordinate2D(it.x + 1, it.y) else Coordinate2D(it.x - 1, it.y) }
+            .filter {
+                if (move == RIGHT) it.x == position.maxOf { it.x }
+                else it.x == position.minOf { it.x }
+            }
+            .map {
+                if (move == RIGHT) generateCoordinateWithinLimits(it, 1, 0, WIDTH, board.size)
+                else generateCoordinateWithinLimits(it, -1, 0, WIDTH, board.size)
+            }
             .all { board[it.y][it.x] == AIR }
 
     private fun calculateNewHeight(board: List<List<Char>>): Int =
         board.zipWithIndex { it }.last { it.second.any { it == PIECE } }.first
 
-    private fun origin(y: Int): Coordinate2D = Coordinate2D(2, y + 4)
+    private fun origin(y: Int): Coordinate2D = Coordinate2D(2, y + 3)
+
+    private fun generateCoordinateWithinLimits(
+        c: Coordinate2D,
+        xIncrement: Int,
+        yIncrement: Int,
+        maxX: Int,
+        maxY: Int
+    ): Coordinate2D =
+        if (c.x + xIncrement >= maxX || c.x + xIncrement < 0 || c.y + yIncrement >= maxY || c.y + yIncrement < 0) c
+        else Coordinate2D(c.x + xIncrement, c.y + yIncrement)
 
     companion object {
         private const val AIR = '.'
