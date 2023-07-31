@@ -8,11 +8,9 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>me.sivieri advent-of-code-2022</name>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.7.21</kotlin.version>
+        <kotlin.version>1.9.0</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <junit.version>4.13.2</junit.version>
         <surefire.version>2.22.2</surefire.version>
