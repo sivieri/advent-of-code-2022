@@ -4,7 +4,8 @@ import me.sivieri.aoc2022.common.Coordinate2D
 import me.sivieri.aoc2022.zipWithIndex
 
 class TetrisBoard(
-    private val wind: String
+    private val wind: String,
+    private val pieces: List<TetrisPiece>
 ) {
     private var index = 0
 
@@ -14,8 +15,8 @@ class TetrisBoard(
         var currentHeight = 0
         var currentPiece = 0
         for (i in 1..moves) {
-            val piece = PIECES[currentPiece]
-            currentPiece = (currentPiece + 1) % PIECES.size
+            val piece = pieces[currentPiece]
+            currentPiece = (currentPiece + 1) % pieces.size
             move(piece, currentHeight, board)
             currentHeight = calculateNewHeight(board)
         }
@@ -95,7 +96,6 @@ class TetrisBoard(
         private const val SPACE = 3
         private const val WIDTH = 7
         private val MAX_HEIGHT = maxOf(LinePiece.height, PipePiece.height, PlusPiece.height, ElPiece.height, SquarePiece.height)
-        private val PIECES = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
     }
 
 }

@@ -9,42 +9,48 @@ class TetrisBoardTest {
     @Test
     fun `line piece down`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val board = TetrisBoard(input)
+        val pieces = listOf(LinePiece)
+        val board = TetrisBoard(input, pieces)
         assertThat(board.calculateMaxHeight(1), `is`(1))
     }
 
     @Test
     fun `plus piece down`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val board = TetrisBoard(input)
-        assertThat(board.calculateMaxHeight(2), `is`(4))
+        val pieces = listOf(PlusPiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(1), `is`(3))
     }
 
     @Test
     fun `L piece down`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val board = TetrisBoard(input)
-        assertThat(board.calculateMaxHeight(3), `is`(6))
+        val pieces = listOf(ElPiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(1), `is`(3))
     }
 
     @Test
     fun `pipe piece down`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val board = TetrisBoard(input)
-        assertThat(board.calculateMaxHeight(4), `is`(7))
+        val pieces = listOf(PipePiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(1), `is`(4))
     }
 
     @Test
     fun `square piece down`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val board = TetrisBoard(input)
-        assertThat(board.calculateMaxHeight(5), `is`(9))
+        val pieces = listOf(SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(1), `is`(2))
     }
 
     @Test
     fun `part 1 example`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val board = TetrisBoard(input)
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
         assertThat(board.calculateMaxHeight(2022), `is`(3068))
     }
 
