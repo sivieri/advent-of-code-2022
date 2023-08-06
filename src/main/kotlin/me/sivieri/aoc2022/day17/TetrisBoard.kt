@@ -12,23 +12,23 @@ class TetrisBoard(
     fun calculateMaxHeight(moves: Int): Int {
         val height = moves * MAX_HEIGHT + SPACE * 10
         val board = List(height) { List(WIDTH) { AIR }.toMutableList() }
-        var currentHeight = 0
+        var highestY = -1
         var currentPiece = 0
         for (i in 1..moves) {
             val piece = pieces[currentPiece]
             currentPiece = (currentPiece + 1) % pieces.size
-            move(piece, currentHeight, board)
-            currentHeight = calculateNewHeight(board)
+            move(piece, highestY, board)
+            highestY = calculateNewHeight(board)
         }
-        return currentHeight + 1
+        return highestY + 1
     }
 
     private fun move(
         piece: TetrisPiece,
-        currentHeight: Int,
+        highestY: Int,
         board: List<MutableList<Char>>
     ) {
-        val start = origin(currentHeight)
+        val start = origin(highestY)
         var position = piece.generateFigure(start)
         var prev: List<Coordinate2D>
         var moving = true
@@ -76,7 +76,7 @@ class TetrisBoard(
     private fun calculateNewHeight(board: List<List<Char>>): Int =
         board.zipWithIndex { it }.last { it.second.any { it == PIECE } }.first
 
-    private fun origin(y: Int): Coordinate2D = Coordinate2D(2, y + 3)
+    private fun origin(y: Int): Coordinate2D = Coordinate2D(2, y + 4)
 
     private fun generateCoordinateWithinLimits(
         c: Coordinate2D,

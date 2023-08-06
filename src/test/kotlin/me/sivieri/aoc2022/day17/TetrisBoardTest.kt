@@ -47,6 +47,38 @@ class TetrisBoardTest {
     }
 
     @Test
+    fun `single piece down`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = List(5) { LinePiece }
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(5), `is`(5))
+    }
+
+    @Test
+    fun `two pieces down`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(2), `is`(4))
+    }
+
+    @Test
+    fun `multiple pieces down`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(5), `is`(9))
+    }
+
+    @Test
+    fun `multiple pieces down multiple times`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        assertThat(board.calculateMaxHeight(10), `is`(17))
+    }
+
+    @Test
     fun `part 1 example`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
