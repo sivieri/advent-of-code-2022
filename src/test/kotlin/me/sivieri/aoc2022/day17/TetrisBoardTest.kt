@@ -11,7 +11,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(1), `is`(1))
+        board.play(1)
+        assertThat(board.maxHeight(), `is`(1))
     }
 
     @Test
@@ -19,7 +20,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(PlusPiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(1), `is`(3))
+        board.play(1)
+        assertThat(board.maxHeight(), `is`(3))
     }
 
     @Test
@@ -27,7 +29,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(ElPiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(1), `is`(3))
+        board.play(1)
+        assertThat(board.maxHeight(), `is`(3))
     }
 
     @Test
@@ -35,7 +38,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(PipePiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(1), `is`(4))
+        board.play(1)
+        assertThat(board.maxHeight(), `is`(4))
     }
 
     @Test
@@ -43,7 +47,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(SquarePiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(1), `is`(2))
+        board.play(1)
+        assertThat(board.maxHeight(), `is`(2))
     }
 
     @Test
@@ -51,7 +56,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = List(5) { LinePiece }
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(5), `is`(5))
+        board.play(5)
+        assertThat(board.maxHeight(), `is`(5))
     }
 
     @Test
@@ -59,7 +65,8 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(2), `is`(4))
+        board.play(2)
+        assertThat(board.maxHeight(), `is`(4))
     }
 
     @Test
@@ -67,15 +74,47 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(5), `is`(9))
+        board.play(5)
+        assertThat(board.maxHeight(), `is`(9))
     }
 
     @Test
-    fun `multiple pieces down multiple times`() {
+    fun `multiple pieces down multiple times - height`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(10), `is`(17))
+        board.play(10)
+        assertThat(board.maxHeight(), `is`(17))
+    }
+
+    @Test
+    fun `multiple pieces down multiple times - board check`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        board.play(10)
+        val height = board.maxHeight()
+        val expected = listOf(
+            "....#..".toCharArray().toList(),
+            "....#..".toCharArray().toList(),
+            "....##.".toCharArray().toList(),
+            "##..##.".toCharArray().toList(),
+            "######.".toCharArray().toList(),
+            ".###...".toCharArray().toList(),
+            "..#....".toCharArray().toList(),
+            ".####..".toCharArray().toList(),
+            "....##.".toCharArray().toList(),
+            "....##.".toCharArray().toList(),
+            "....#..".toCharArray().toList(),
+            "..#.#..".toCharArray().toList(),
+            "..#.#..".toCharArray().toList(),
+            "#####..".toCharArray().toList(),
+            "..###..".toCharArray().toList(),
+            "...#...".toCharArray().toList(),
+            "..####.".toCharArray().toList()
+        )
+        val f = prepareCheckerFunction(height, expected)
+        assertThat(board.boardStatusChecker(f), `is`(true))
     }
 
     @Test
@@ -83,7 +122,15 @@ class TetrisBoardTest {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
         val board = TetrisBoard(input, pieces)
-        assertThat(board.calculateMaxHeight(2022), `is`(3068))
+        board.play(2022)
+        assertThat(board.maxHeight(), `is`(3068))
+    }
+
+    private fun prepareCheckerFunction(
+        height: Int,
+        expected: List<List<Char>>
+    ): (List<MutableList<Char>>) -> Boolean = { status ->
+        (0 until height).all { status[it] == expected[height - it - 1] }
     }
 
 }

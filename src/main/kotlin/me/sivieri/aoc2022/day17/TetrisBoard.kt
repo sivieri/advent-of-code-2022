@@ -8,11 +8,12 @@ class TetrisBoard(
     private val pieces: List<TetrisPiece>
 ) {
     private var index = 0
+    private var highestY = -1
+    private lateinit var board: List<MutableList<Char>>
 
-    fun calculateMaxHeight(moves: Int): Int {
+    fun play(moves:Int) {
         val height = moves * MAX_HEIGHT + SPACE * 10
-        val board = List(height) { List(WIDTH) { AIR }.toMutableList() }
-        var highestY = -1
+        board = List(height) { List(WIDTH) { AIR }.toMutableList() }
         var currentPiece = 0
         for (i in 1..moves) {
             val piece = pieces[currentPiece]
@@ -20,8 +21,11 @@ class TetrisBoard(
             move(piece, highestY, board)
             highestY = calculateNewHeight(board)
         }
-        return highestY + 1
     }
+
+    fun maxHeight(): Int = highestY + 1
+
+    fun boardStatusChecker(checker: (List<MutableList<Char>>) -> Boolean): Boolean = checker(board)
 
     private fun move(
         piece: TetrisPiece,
