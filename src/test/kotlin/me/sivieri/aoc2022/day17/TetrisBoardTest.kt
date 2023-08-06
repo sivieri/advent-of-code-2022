@@ -3,6 +3,8 @@ package me.sivieri.aoc2022.day17
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Test
+import java.nio.file.Files
+import java.nio.file.Path
 
 class TetrisBoardTest {
 
@@ -113,7 +115,9 @@ class TetrisBoardTest {
             "...#...".toCharArray().toList(),
             "..####.".toCharArray().toList()
         )
-        val f = prepareCheckerFunction(height, expected)
+        val f: (List<MutableList<Char>>) -> Boolean = { status ->
+            (0 until height).all { status[it] == expected[height - it - 1] }
+        }
         assertThat(board.boardStatusChecker(f), `is`(true))
     }
 
@@ -126,11 +130,20 @@ class TetrisBoardTest {
         assertThat(board.maxHeight(), `is`(3068))
     }
 
-    private fun prepareCheckerFunction(
-        height: Int,
-        expected: List<List<Char>>
-    ): (List<MutableList<Char>>) -> Boolean = { status ->
-        (0 until height).all { status[it] == expected[height - it - 1] }
+    @Test
+    fun `part 1 example - heights check`() {
+        val heights = Files
+            .lines(Path.of(this::class.java.getResource("/day17/heights.txt")!!.toURI()))
+            .iterator()
+            .asSequence()
+            .toList()
+            .map { it.toInt() }
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        board.playWithCollateral(2022) { i, _, height ->
+            assertThat(height, `is`(heights[i - 1]))
+        }
     }
 
 }

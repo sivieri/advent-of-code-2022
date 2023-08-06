@@ -12,15 +12,28 @@ class TetrisBoard(
     private var highestY = -1
     private lateinit var board: List<MutableList<Char>>
 
-    fun play(moves:Int) {
+    fun play(moves: Int) {
         val height = moves * MAX_HEIGHT + SPACE * 10
         board = List(height) { List(WIDTH) { AIR }.toMutableList() }
         var currentPiece = 0
         for (i in 1..moves) {
             val piece = pieces[currentPiece]
             currentPiece = (currentPiece + 1) % pieces.size
-            singlePieceCompleteFall(piece, highestY, board)
-            highestY = calculateNewHeight(board)
+            singlePieceCompleteFall(piece, highestY)
+            highestY = calculateNewHeight()
+        }
+    }
+
+    fun playWithCollateral(moves: Int, f: (Int, List<MutableList<Char>>, Int) -> Unit) {
+        val height = moves * MAX_HEIGHT + SPACE * 10
+        board = List(height) { List(WIDTH) { AIR }.toMutableList() }
+        var currentPiece = 0
+        for (i in 1..moves) {
+            val piece = pieces[currentPiece]
+            currentPiece = (currentPiece + 1) % pieces.size
+            singlePieceCompleteFall(piece, highestY)
+            highestY = calculateNewHeight()
+            f(i, board, maxHeight())
         }
     }
 
@@ -30,8 +43,7 @@ class TetrisBoard(
 
     private fun singlePieceCompleteFall(
         piece: TetrisPiece,
-        highestY: Int,
-        board: List<MutableList<Char>>
+        highestY: Int
     ) {
         val start = origin(highestY)
         var position = piece.generateFigure(start)
@@ -77,7 +89,7 @@ class TetrisBoard(
         return limitsCheck && (newPosition - oldPosition).all { board[it.y][it.x] == AIR }
     }
 
-    private fun calculateNewHeight(board: List<List<Char>>): Int =
+    private fun calculateNewHeight(): Int =
         board.zipWithIndex { it }.last { it.second.any { it == PIECE } }.first
 
     private fun origin(y: Int): Coordinate2D = Coordinate2D(2, y + 4)
