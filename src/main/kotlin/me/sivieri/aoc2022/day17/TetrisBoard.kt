@@ -5,9 +5,10 @@ import me.sivieri.aoc2022.zipWithIndex
 
 @Suppress("ConvertArgumentToSet")
 class TetrisBoard(
-    private val wind: String,
+    wind: String,
     private val pieces: List<TetrisPiece>
 ) {
+    private val wind: String = wind.trim()
     private var index = 0
     private var highestY = -1
     private lateinit var board: List<MutableList<Char>>

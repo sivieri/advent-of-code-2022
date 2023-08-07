@@ -5,6 +5,7 @@ import org.hamcrest.Matchers.`is`
 import org.junit.Test
 import java.nio.file.Files
 import java.nio.file.Path
+import kotlin.math.sign
 
 class TetrisBoardTest {
 
@@ -97,26 +98,66 @@ class TetrisBoardTest {
         board.play(10)
         val height = board.maxHeight()
         val expected = listOf(
-            "....#..".toCharArray().toList(),
-            "....#..".toCharArray().toList(),
-            "....##.".toCharArray().toList(),
-            "##..##.".toCharArray().toList(),
-            "######.".toCharArray().toList(),
-            ".###...".toCharArray().toList(),
-            "..#....".toCharArray().toList(),
-            ".####..".toCharArray().toList(),
-            "....##.".toCharArray().toList(),
-            "....##.".toCharArray().toList(),
-            "....#..".toCharArray().toList(),
-            "..#.#..".toCharArray().toList(),
-            "..#.#..".toCharArray().toList(),
-            "#####..".toCharArray().toList(),
-            "..###..".toCharArray().toList(),
-            "...#...".toCharArray().toList(),
-            "..####.".toCharArray().toList()
-        )
+            "....#..".toList(),
+            "....#..".toList(),
+            "....##.".toList(),
+            "##..##.".toList(),
+            "######.".toList(),
+            ".###...".toList(),
+            "..#....".toList(),
+            ".####..".toList(),
+            "....##.".toList(),
+            "....##.".toList(),
+            "....#..".toList(),
+            "..#.#..".toList(),
+            "..#.#..".toList(),
+            "#####..".toList(),
+            "..###..".toList(),
+            "...#...".toList(),
+            "..####.".toList()
+        ).reversed()
         val f: (List<MutableList<Char>>) -> Boolean = { status ->
-            (0 until height).all { status[it] == expected[height - it - 1] }
+            (0 until height).all { status[it] == expected[it] }
+        }
+        assertThat(board.boardStatusChecker(f), `is`(true))
+    }
+
+    @Test
+    fun `multiple pieces down multiple times, take 2 - board check`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        board.play(15)
+        val height = board.maxHeight()
+        val expected = listOf(
+            ".....##".toList(),
+            ".....##".toList(),
+            "......#".toList(),
+            "......#".toList(),
+            "...####".toList(),
+            "..###..".toList(),
+            "...#...".toList(),
+            "#..####".toList(),
+            "#...#..".toList(),
+            "#...#..".toList(),
+            "#...##.".toList(),
+            "##..##.".toList(),
+            "######.".toList(),
+            ".###...".toList(),
+            "..#....".toList(),
+            ".####..".toList(),
+            "....##.".toList(),
+            "....##.".toList(),
+            "....#..".toList(),
+            "..#.#..".toList(),
+            "..#.#..".toList(),
+            "#####..".toList(),
+            "..###..".toList(),
+            "...#...".toList(),
+            "..####.".toList()
+        ).reversed()
+        val f: (List<MutableList<Char>>) -> Boolean = { status ->
+            (0 until height).all { status[it] == expected[it] }
         }
         assertThat(board.boardStatusChecker(f), `is`(true))
     }
@@ -144,6 +185,28 @@ class TetrisBoardTest {
         board.playWithCollateral(2022) { i, _, height ->
             assertThat(height, `is`(heights[i - 1]))
         }
+    }
+
+    @Test
+    fun `part 1 example - board check`() {
+        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
+        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
+        val board = TetrisBoard(input, pieces)
+        board.play(2022)
+        val height = board.maxHeight()
+        val expected = Files
+            .lines(Path.of(this::class.java.getResource("/day17/tower.txt")!!.toURI()))
+            .iterator()
+            .asSequence()
+            .toList()
+            .map { it.toList() }
+            .reversed()
+        val f: (List<MutableList<Char>>) -> Boolean = { status ->
+            (0 until height).all {
+                status[it] == expected[it].subList(1, expected[it].size - 1)
+            }
+        }
+        assertThat(board.boardStatusChecker(f), `is`(true))
     }
 
 }
