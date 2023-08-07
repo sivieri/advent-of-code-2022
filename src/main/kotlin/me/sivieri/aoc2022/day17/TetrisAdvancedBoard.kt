@@ -2,7 +2,6 @@ package me.sivieri.aoc2022.day17
 
 import me.sivieri.aoc2022.common.Coordinate2D
 import me.sivieri.aoc2022.zipWithIndex
-import kotlin.math.max
 
 @Suppress("ConvertArgumentToSet")
 class TetrisAdvancedBoard(
@@ -16,10 +15,80 @@ class TetrisAdvancedBoard(
     private lateinit var board: List<MutableList<Char>>
 
     fun play(moves: Long) {
+        // find loop
+        val runs = mutableListOf<Pair<Int, Int>>()
         board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
         var currentPiece = 0
-        for (i in 1..moves) {
-            if (i % 1_000_000L == 0L) println("Move $i")
+        var i = 1
+        var reference = Pair(0, 0)
+        while (true) {
+            reference = Pair(currentPiece, index)
+            runs.add(reference)
+            if (i > moves) break
+            val piece = pieces[currentPiece]
+            currentPiece = (currentPiece + 1) % pieces.size
+            singlePieceCompleteFall(piece, highestY)
+            highestY = calculateNewHeight()
+            if (highestY >= CONST_HEIGHT - 10) {
+                maxHeight += CONST_HEIGHT / 2
+                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
+                highestY -= CONST_HEIGHT / 2
+            }
+            i++
+            val repeatStarted = findRepetitions(runs)
+            if (repeatStarted) {
+                break
+            }
+        }
+        if (i > moves) {
+            maxHeight += highestY + 1
+            return
+        }
+        val initialMoves = runs.indexOf(reference) + 1
+        val loopLength = i - initialMoves - 1
+        val loops = moves / loopLength
+        val remainingMoves = moves % loopLength
+        println("$initialMoves - $loopLength - $loops - $remainingMoves")
+
+        // run loop
+        board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
+        currentPiece = 0
+        highestY = -1
+        for (i in 1..initialMoves) {
+            val piece = pieces[currentPiece]
+            currentPiece = (currentPiece + 1) % pieces.size
+            singlePieceCompleteFall(piece, highestY)
+            highestY = calculateNewHeight()
+            if (highestY >= CONST_HEIGHT - 10) {
+                maxHeight += CONST_HEIGHT / 2
+                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
+                highestY -= CONST_HEIGHT / 2
+            }
+        }
+        maxHeight += highestY + 1
+
+        board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
+        currentPiece = reference.first
+        index = reference.second
+        highestY = -1
+        for (i in 1..loopLength) {
+            val piece = pieces[currentPiece]
+            currentPiece = (currentPiece + 1) % pieces.size
+            singlePieceCompleteFall(piece, highestY)
+            highestY = calculateNewHeight()
+            if (highestY >= CONST_HEIGHT - 10) {
+                maxHeight += CONST_HEIGHT / 2
+                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
+                highestY -= CONST_HEIGHT / 2
+            }
+        }
+        maxHeight += (highestY + 1) * loops
+
+        board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
+        currentPiece = reference.first
+        index = reference.second
+        highestY = -1
+        for (i in 1..remainingMoves) {
             val piece = pieces[currentPiece]
             currentPiece = (currentPiece + 1) % pieces.size
             singlePieceCompleteFall(piece, highestY)
@@ -64,6 +133,9 @@ class TetrisAdvancedBoard(
             else moving = false
         }
     }
+
+    private fun findRepetitions(runs: List<Pair<Int, Int>>): Boolean =
+        runs.groupBy { it }.mapValues { it.value.size }.filter { it.value > 1 }.isNotEmpty()
 
     private fun canMoveDown(
         newPosition: List<Coordinate2D>,

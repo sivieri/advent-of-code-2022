@@ -8,22 +8,6 @@ import org.junit.Test
 class TetrisAdvancedBoardTest {
 
     @Test
-    fun `part 1 example - optimization analysis`() {
-        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
-        val board = TetrisBoard(input, pieces)
-        board.play(2022)
-        val height = board.maxHeight()
-        val f: (List<MutableList<Char>>) -> Boolean = { status ->
-            (0 until height).forEach {
-                if (status[it].all { it == '#' }) println("Row $it is complete")
-            }
-            true
-        }
-        board.boardStatusChecker(f)
-    }
-
-    @Test
     fun `part 1 example`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
@@ -33,7 +17,6 @@ class TetrisAdvancedBoardTest {
     }
 
     @Test
-    @Ignore
     fun `part 2 example`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
