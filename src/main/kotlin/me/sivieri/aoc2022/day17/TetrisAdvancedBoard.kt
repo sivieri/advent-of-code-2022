@@ -46,8 +46,8 @@ class TetrisAdvancedBoard(
         }
         val initialMoves = runs.indexOf(reference) + 1
         val loopLength = i - initialMoves - 1
-        val loops = moves / loopLength
-        val remainingMoves = moves % loopLength
+        val loops = (moves - initialMoves) / loopLength
+        val remainingMoves = (moves - initialMoves) % loopLength
         println("$initialMoves - $loopLength - $loops - $remainingMoves")
 
         // run loop
