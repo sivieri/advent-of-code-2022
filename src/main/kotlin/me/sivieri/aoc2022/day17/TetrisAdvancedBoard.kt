@@ -10,96 +10,50 @@ class TetrisAdvancedBoard(
 ) {
     private val wind: String = wind.trim()
     private var index = 0
+    private var currentPiece = 0
     private var highestY = -1
     var maxHeight = 0L
     private lateinit var board: List<MutableList<Char>>
 
     fun play(moves: Long) {
         // find loop
-        val runs = mutableListOf<Pair<Int, Int>>()
+        val states = mutableMapOf<PeakState, Pair<Int, Int>>()
         board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
-        var currentPiece = 0
+        currentPiece = 0
         var i = 1
-        var reference = Pair(0, 0)
+        var state = PeakState(emptyList(), 0, 0)
         while (true) {
-            reference = Pair(currentPiece, index)
-            runs.add(reference)
             if (i > moves) break
             val piece = pieces[currentPiece]
             currentPiece = (currentPiece + 1) % pieces.size
             singlePieceCompleteFall(piece, highestY)
             highestY = calculateNewHeight()
-            if (highestY >= CONST_HEIGHT - 10) {
-                maxHeight += CONST_HEIGHT / 2
-                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
-                highestY -= CONST_HEIGHT / 2
-            }
-            i++
-            val repeatStarted = findRepetitions(runs)
-            if (repeatStarted) {
+            state = calculatePeakState()
+            if (state in states) {
+                println("State $state")
                 break
             }
+            states[state] = Pair(i - 1, highestY + 1)
+            i++
         }
         if (i > moves) {
             maxHeight += highestY + 1
             return
         }
-        val initialMoves = runs.indexOf(reference) + 1
-        val loopLength = i - initialMoves - 1
+        val (initialMoves, initialHeight) = states.getValue(state)
+        val loopLength = i - 1 - initialMoves
         val loops = (moves - initialMoves) / loopLength
-        val remainingMoves = (moves - initialMoves) % loopLength
-        println("$initialMoves - $loopLength - $loops - $remainingMoves")
+        val remainingMoves = (moves - initialMoves) - (loops * loopLength) - 1
+        val heightGainedSinceLoop = highestY + 1 - initialHeight
 
-        // run loop
-        board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
-        currentPiece = 0
-        highestY = -1
-        for (i in 1..initialMoves) {
-            val piece = pieces[currentPiece]
-            currentPiece = (currentPiece + 1) % pieces.size
-            singlePieceCompleteFall(piece, highestY)
-            highestY = calculateNewHeight()
-            if (highestY >= CONST_HEIGHT - 10) {
-                maxHeight += CONST_HEIGHT / 2
-                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
-                highestY -= CONST_HEIGHT / 2
-            }
-        }
-        maxHeight += highestY + 1
-
-        board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
-        currentPiece = reference.first
-        index = reference.second
-        highestY = -1
-        for (i in 1..loopLength) {
-            val piece = pieces[currentPiece]
-            currentPiece = (currentPiece + 1) % pieces.size
-            singlePieceCompleteFall(piece, highestY)
-            highestY = calculateNewHeight()
-            if (highestY >= CONST_HEIGHT - 10) {
-                maxHeight += CONST_HEIGHT / 2
-                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
-                highestY -= CONST_HEIGHT / 2
-            }
-        }
-        maxHeight += (highestY + 1) * loops
-
-        board = List(CONST_HEIGHT) { List(WIDTH) { AIR }.toMutableList() }
-        currentPiece = reference.first
-        index = reference.second
-        highestY = -1
+        // run the remaining moves
         for (i in 1..remainingMoves) {
             val piece = pieces[currentPiece]
             currentPiece = (currentPiece + 1) % pieces.size
             singlePieceCompleteFall(piece, highestY)
             highestY = calculateNewHeight()
-            if (highestY >= CONST_HEIGHT - 10) {
-                maxHeight += CONST_HEIGHT / 2
-                board = board.subList(CONST_HEIGHT / 2, board.size) + List(CONST_HEIGHT / 2) { List(WIDTH) { AIR }.toMutableList() }
-                highestY -= CONST_HEIGHT / 2
-            }
         }
-        maxHeight += highestY + 1
+        maxHeight += highestY + 1 + (heightGainedSinceLoop * (loops - 1))
     }
 
     private fun singlePieceCompleteFall(
@@ -134,8 +88,14 @@ class TetrisAdvancedBoard(
         }
     }
 
-    private fun findRepetitions(runs: List<Pair<Int, Int>>): Boolean =
-        runs.groupBy { it }.mapValues { it.value.size }.filter { it.value > 1 }.isNotEmpty()
+    private fun calculatePeakState(): PeakState {
+        val index = board.indexOf(EMPTY_ROW)
+        val rev = board.subList(0, index).reversed().zipWithIndex { it }
+        val indexes = (0 until WIDTH).map { i ->
+            rev.firstOrNull { it.second[i] == PIECE }?.first ?: -1
+        }
+        return PeakState(indexes, currentPiece, this.index)
+    }
 
     private fun canMoveDown(
         newPosition: List<Coordinate2D>,
@@ -158,13 +118,20 @@ class TetrisAdvancedBoard(
 
     private fun origin(y: Int): Coordinate2D = Coordinate2D(2, y + 4)
 
+    fun printBoard() {
+        val firstEmpty = board.indexOf(listOf(AIR, AIR, AIR, AIR, AIR, AIR, AIR))
+        board.subList(0, firstEmpty + 3).reversed().forEach { println(it.joinToString("", prefix = "|", postfix = "|")) }
+        println("|-------|")
+    }
+
     companion object {
         private const val AIR = '.'
         private const val PIECE = '#'
         private const val LEFT = '<'
         private const val RIGHT = '>'
         private const val WIDTH = 7
-        private val CONST_HEIGHT = 1000
+        private val CONST_HEIGHT = 10000
+        private val EMPTY_ROW = List(WIDTH) { AIR }
     }
 
 }

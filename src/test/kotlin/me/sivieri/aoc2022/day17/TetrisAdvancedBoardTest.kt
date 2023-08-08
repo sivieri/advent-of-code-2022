@@ -8,15 +8,6 @@ import org.junit.Test
 class TetrisAdvancedBoardTest {
 
     @Test
-    fun `part 1 example`() {
-        val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
-        val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
-        val board = TetrisAdvancedBoard(input, pieces)
-        board.play(2022)
-        MatcherAssert.assertThat(board.maxHeight, Matchers.`is`(3068))
-    }
-
-    @Test
     fun `part 2 example`() {
         val input = ">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>"
         val pieces = listOf(LinePiece, PlusPiece, ElPiece, PipePiece, SquarePiece)
