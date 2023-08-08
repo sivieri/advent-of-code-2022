@@ -1,5 +1,7 @@
 package me.sivieri.aoc2022.day19
 
+import kotlin.math.min
+
 class BlueprintSelector(
     data: List<String>
 ) {
@@ -20,24 +22,56 @@ class BlueprintSelector(
         var queue = listOf(ExtractionStatus())
         (1..time).forEach {  minute ->
             println("Minute $minute")
-            val next = emptyList<ExtractionStatus>()
-            queue.forEach { status ->
-                // end construction (if any)
-                val constructionUpdate = when (status.currentConstruction) {
-                    is ClayRobot -> status.copy(clayRobots = status.clayRobots + 1)
-                    is GeodeRobot -> status.copy(geodeRobots = status.geodeRobots + 1)
-                    is ObsidianRobot -> status.copy(obsidianRobots = status.obsidianRobots + 1)
-                    is OreRobot -> status.copy(oreRobots = status.oreRobots + 1)
-                    null -> status
+            var currentConstruction: Robot? = null
+            queue = queue.flatMap { status ->
+                // decide what we can construct
+                val geodePossibleRobot = min(
+                    status.obsidian / blueprint.geodeRobot.obsidian,
+                    status.ore / blueprint.geodeRobot.ore,
+                )
+                val constructionCombinations = (0..geodePossibleRobot).flatMap { geodeRobots ->
+                    val geodeLess = status.copy(
+                        obsidian = status.obsidian - blueprint.geodeRobot.obsidian * geodeRobots,
+                        ore = status.ore - blueprint.geodeRobot.ore * geodeRobots,
+                    )
+                    val obsidianPossibleRobot = min(
+                        geodeLess.clay / blueprint.obsidianRobot.clay,
+                        geodeLess.ore / blueprint.obsidianRobot.ore,
+                    )
+                    (0..obsidianPossibleRobot).flatMap { obsidianRobots ->
+                        val obsidianLess = geodeLess.copy(
+                            clay = geodeLess.clay - blueprint.obsidianRobot.clay * obsidianRobots,
+                            ore = geodeLess.ore - blueprint.obsidianRobot.ore * obsidianRobots,
+                        )
+                        val clayPossibleRobot = obsidianLess.ore / blueprint.clayRobot.ore
+                        (0..clayPossibleRobot).flatMap { clayRobots ->
+                            val clayLess = obsidianLess.copy(ore = obsidianLess.ore - blueprint.clayRobot.ore * clayRobots)
+                            val orePossibleRobot = clayLess.ore / blueprint.oreRobot.ore
+                            (0..orePossibleRobot).map { oreRobots ->
+                                clayLess.copy(ore = clayLess.ore - blueprint.oreRobot.ore * oreRobots)
+                            }
+                        }
+                    }
                 }
 
-                // decide what we can construct
-
-
                 // collect new resources
-
+                constructionCombinations.map { s ->
+                    val resourcesEnriched = s.copy(
+                        ore = s.ore + s.oreRobots,
+                        clay = s.clay + s.clayRobots,
+                        obsidian = s.obsidian + s.obsidianRobots,
+                        geode = s.geode + s.geodeRobots,
+                    )
+                    // end construction (if any)
+                    when (currentConstruction) {
+                        is ClayRobot -> resourcesEnriched.copy(clayRobots = resourcesEnriched.clayRobots + 1)
+                        is GeodeRobot -> resourcesEnriched.copy(geodeRobots = resourcesEnriched.geodeRobots + 1)
+                        is ObsidianRobot -> resourcesEnriched.copy(obsidianRobots = resourcesEnriched.obsidianRobots + 1)
+                        is OreRobot -> resourcesEnriched.copy(oreRobots = resourcesEnriched.oreRobots + 1)
+                        null -> resourcesEnriched
+                    }
+                }
             }
-            queue = next
         }
         return queue.maxOf { it.geode }
     }
