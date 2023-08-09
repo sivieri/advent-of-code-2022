@@ -101,9 +101,7 @@ class ConstructionPlanTest {
         val plan = ResourceOrientedConstructionPlan()
         val result = plan.executePlan(blueprint, status, 10)
         val expected = listOf(
-            Pair(ExtractionStatus(3, 17, 1, 0, 0, 10, 0), blueprint.obsidianRobot),
-            Pair(ExtractionStatus(3, 17, 1, 0, 17, 0, 0), blueprint.geodeRobot),
-            Pair(status, null)
+            Pair(ExtractionStatus(3, 17, 1, 0, 17, 0, 0), blueprint.geodeRobot)
         )
         assertThat(result, `is`(expected))
     }

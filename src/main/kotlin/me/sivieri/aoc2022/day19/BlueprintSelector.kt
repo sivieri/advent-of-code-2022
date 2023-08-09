@@ -12,15 +12,16 @@ class BlueprintSelector(
 
     fun calculateTotalValue(time: Int) = calculateBlueprintsValue(time).entries.sumOf { it.key * it.value }
 
-    fun calculateBlueprintsValue(time: Int): Map<Int, Int> = blueprints.values.associate {
+    private fun calculateBlueprintsValue(time: Int): Map<Int, Int> = blueprints.values.associate {
         it.id to calculateBlueprintValue(time, it.id)
     }
 
     fun calculateBlueprintValue(time: Int, id: Int): Int {
         val blueprint = blueprints.getValue(id)
+        println("Analyzing blueprint $blueprint")
         var queue = listOf(ExtractionStatus().compact())
         (1..time).forEach {  minute ->
-            println("Minute $minute: queue size ${queue.size}")
+            println("\tMinute $minute: queue size ${queue.size}")
             queue = queue.flatMap { statusArray ->
                 val status = ExtractionStatus.fromCompact(statusArray)
                 // decide what we can construct
