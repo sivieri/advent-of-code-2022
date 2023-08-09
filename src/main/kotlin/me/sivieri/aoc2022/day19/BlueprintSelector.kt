@@ -1,9 +1,8 @@
 package me.sivieri.aoc2022.day19
 
-import kotlin.math.min
-
 class BlueprintSelector(
-    data: List<String>
+    data: List<String>,
+    private val constructionPlan: ConstructionPlan
 ) {
 
     private val blueprints = data.map {
@@ -19,60 +18,36 @@ class BlueprintSelector(
 
     fun calculateBlueprintValue(time: Int, id: Int): Int {
         val blueprint = blueprints.getValue(id)
-        var queue = listOf(ExtractionStatus())
+        var queue = listOf(ExtractionStatus().compact())
         (1..time).forEach {  minute ->
-            println("Minute $minute")
-            var currentConstruction: Robot? = null
-            queue = queue.flatMap { status ->
+            println("Minute $minute: queue size ${queue.size}")
+            queue = queue.flatMap { statusArray ->
+                val status = ExtractionStatus.fromCompact(statusArray)
                 // decide what we can construct
-                val geodePossibleRobot = min(
-                    status.obsidian / blueprint.geodeRobot.obsidian,
-                    status.ore / blueprint.geodeRobot.ore,
-                )
-                val constructionCombinations = (0..geodePossibleRobot).flatMap { geodeRobots ->
-                    val geodeLess = status.copy(
-                        obsidian = status.obsidian - blueprint.geodeRobot.obsidian * geodeRobots,
-                        ore = status.ore - blueprint.geodeRobot.ore * geodeRobots,
-                    )
-                    val obsidianPossibleRobot = min(
-                        geodeLess.clay / blueprint.obsidianRobot.clay,
-                        geodeLess.ore / blueprint.obsidianRobot.ore,
-                    )
-                    (0..obsidianPossibleRobot).flatMap { obsidianRobots ->
-                        val obsidianLess = geodeLess.copy(
-                            clay = geodeLess.clay - blueprint.obsidianRobot.clay * obsidianRobots,
-                            ore = geodeLess.ore - blueprint.obsidianRobot.ore * obsidianRobots,
-                        )
-                        val clayPossibleRobot = obsidianLess.ore / blueprint.clayRobot.ore
-                        (0..clayPossibleRobot).flatMap { clayRobots ->
-                            val clayLess = obsidianLess.copy(ore = obsidianLess.ore - blueprint.clayRobot.ore * clayRobots)
-                            val orePossibleRobot = clayLess.ore / blueprint.oreRobot.ore
-                            (0..orePossibleRobot).map { oreRobots ->
-                                clayLess.copy(ore = clayLess.ore - blueprint.oreRobot.ore * oreRobots)
-                            }
-                        }
-                    }
-                }
+                val constructionCombinations = constructionPlan.executePlan(blueprint, status)
 
-                // collect new resources
-                constructionCombinations.map { s ->
+                val final = constructionCombinations.map { (s, c) ->
+                    // collect new resources
                     val resourcesEnriched = s.copy(
                         ore = s.ore + s.oreRobots,
                         clay = s.clay + s.clayRobots,
                         obsidian = s.obsidian + s.obsidianRobots,
                         geode = s.geode + s.geodeRobots,
                     )
+
                     // end construction (if any)
-                    when (currentConstruction) {
+                    when (c) {
                         is ClayRobot -> resourcesEnriched.copy(clayRobots = resourcesEnriched.clayRobots + 1)
                         is GeodeRobot -> resourcesEnriched.copy(geodeRobots = resourcesEnriched.geodeRobots + 1)
                         is ObsidianRobot -> resourcesEnriched.copy(obsidianRobots = resourcesEnriched.obsidianRobots + 1)
                         is OreRobot -> resourcesEnriched.copy(oreRobots = resourcesEnriched.oreRobots + 1)
                         null -> resourcesEnriched
-                    }
+                    }.compact()
                 }
+                final
             }
         }
-        return queue.maxOf { it.geode }
+        return queue.maxOf { it[ExtractionStatus.GEODE_POSITION] }
     }
+
 }
