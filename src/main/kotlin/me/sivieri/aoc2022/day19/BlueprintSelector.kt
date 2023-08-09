@@ -1,5 +1,7 @@
 package me.sivieri.aoc2022.day19
 
+import me.sivieri.aoc2022.multiplyBy
+
 class BlueprintSelector(
     data: List<String>,
     private val constructionPlan: ConstructionPlan
@@ -11,6 +13,8 @@ class BlueprintSelector(
     }.toMap()
 
     fun calculateTotalValue(time: Int) = calculateBlueprintsValue(time).entries.sumOf { it.key * it.value }
+
+    fun calculateProduct(time: Int) = calculateBlueprintsValue(time).values.toList().multiplyBy { it.toLong() }
 
     private fun calculateBlueprintsValue(time: Int): Map<Int, Int> = blueprints.values.associate {
         it.id to calculateBlueprintValue(time, it.id)
