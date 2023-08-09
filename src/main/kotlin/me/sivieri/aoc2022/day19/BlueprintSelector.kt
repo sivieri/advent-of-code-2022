@@ -24,21 +24,19 @@ class BlueprintSelector(
             queue = queue.flatMap { statusArray ->
                 val status = ExtractionStatus.fromCompact(statusArray)
                 // decide what we can construct
-                val constructionCombinations = constructionPlan.executePlan(blueprint, status)
-
+                val constructionCombinations = constructionPlan.executePlan(blueprint, status, time - minute)
                 val final = constructionCombinations.map { (s, c) ->
                     // collect new resources
                     val resourcesEnriched = s.copy(
                         ore = s.ore + s.oreRobots,
                         clay = s.clay + s.clayRobots,
-                        obsidian = s.obsidian + s.obsidianRobots,
-                        geode = s.geode + s.geodeRobots,
+                        obsidian = s.obsidian + s.obsidianRobots
                     )
 
                     // end construction (if any)
                     when (c) {
                         is ClayRobot -> resourcesEnriched.copy(clayRobots = resourcesEnriched.clayRobots + 1)
-                        is GeodeRobot -> resourcesEnriched.copy(geodeRobots = resourcesEnriched.geodeRobots + 1)
+                        is GeodeRobot -> resourcesEnriched.copy(geode = resourcesEnriched.geode + (time - minute)) // these geodes will be produced until the end
                         is ObsidianRobot -> resourcesEnriched.copy(obsidianRobots = resourcesEnriched.obsidianRobots + 1)
                         is OreRobot -> resourcesEnriched.copy(oreRobots = resourcesEnriched.oreRobots + 1)
                         null -> resourcesEnriched

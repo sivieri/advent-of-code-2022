@@ -4,16 +4,15 @@ data class ExtractionStatus(
     val oreRobots: Int = 1,
     val clayRobots: Int = 0,
     val obsidianRobots: Int = 0,
-    val geodeRobots: Int = 0,
     val ore: Int = 0,
     val clay: Int = 0,
     val obsidian: Int = 0,
     val geode: Int = 0
 ) {
-    fun compact(): Array<Int> = arrayOf(oreRobots, clayRobots, obsidianRobots, geodeRobots, ore, clay, obsidian, geode)
+    fun compact(): Array<Int> = arrayOf(oreRobots, clayRobots, obsidianRobots, ore, clay, obsidian, geode)
 
     companion object {
-        const val GEODE_POSITION = 7
+        const val GEODE_POSITION = 6
 
         fun fromCompact(array: Array<Int>): ExtractionStatus = ExtractionStatus(
             array[0],
@@ -22,8 +21,7 @@ data class ExtractionStatus(
             array[3],
             array[4],
             array[5],
-            array[6],
-            array[7]
+            array[6]
         )
     }
 }
