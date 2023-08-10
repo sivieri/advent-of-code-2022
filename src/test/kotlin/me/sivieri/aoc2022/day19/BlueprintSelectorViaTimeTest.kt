@@ -5,7 +5,7 @@ import org.hamcrest.Matchers.`is`
 import org.junit.Ignore
 import org.junit.Test
 
-class BlueprintSelectorTest {
+class BlueprintSelectorViaTimeTest {
 
     @Test
     @Ignore
@@ -14,7 +14,7 @@ class BlueprintSelectorTest {
             Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
             Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
         """.trimIndent().split("\n").map { it.trim() }
-        val blueprintSelector = BlueprintSelector(data, ResourceOrientedConstructionPlan())
+        val blueprintSelector = BlueprintSelectorViaTime(data, ResourceOrientedConstructionPlan())
         assertThat(blueprintSelector.calculateBlueprintValue(24, 1), `is`(9))
     }
 
@@ -25,7 +25,7 @@ class BlueprintSelectorTest {
             Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
             Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
         """.trimIndent().split("\n").map { it.trim() }
-        val blueprintSelector = BlueprintSelector(data, ResourceOrientedConstructionPlan())
+        val blueprintSelector = BlueprintSelectorViaTime(data, ResourceOrientedConstructionPlan())
         assertThat(blueprintSelector.calculateBlueprintValue(24, 2), `is`(12))
     }
 
@@ -36,7 +36,7 @@ class BlueprintSelectorTest {
             Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.
             Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian.
         """.trimIndent().split("\n").map { it.trim() }
-        val blueprintSelector = BlueprintSelector(data, ResourceOrientedConstructionPlan())
+        val blueprintSelector = BlueprintSelectorViaTime(data, ResourceOrientedConstructionPlan())
         assertThat(blueprintSelector.calculateTotalValue(24), `is`(33))
     }
 
