@@ -7,7 +7,7 @@ object Main2 {
     @JvmStatic
     fun main(args: Array<String>) {
         val data = Utils.readInputToList(19).subList(0, 3)
-        val blueprintSelector = BlueprintSelector(data, ResourceOrientedConstructionPlan())
+        val blueprintSelector = BlueprintSelectorViaRobot(data, ResourceOrientedConstructionPlan())
         val result = blueprintSelector.calculateProduct(32)
         println(result)
     }
