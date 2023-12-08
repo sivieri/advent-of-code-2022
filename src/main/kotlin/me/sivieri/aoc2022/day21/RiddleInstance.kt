@@ -3,7 +3,8 @@ package me.sivieri.aoc2022.day21
 class RiddleInstance(
     val label: String,
     var value: Long?,
-    val operation: RiddleOperation
+    val operation: RiddleOperation,
+    var side: RiddleSide? = null
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -19,6 +20,7 @@ class RiddleInstance(
     }
 
     override fun toString(): String {
-        return "RiddleInstance(label='$label', value=$value, operation=$operation)"
+        return "RiddleInstance(label='$label', value=$value, operation=$operation, side=$side)"
     }
+
 }

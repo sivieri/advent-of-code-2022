@@ -23,12 +23,54 @@ class MonkeyRiddle(data: String) {
         }
         val allVertex = (numbers + ops.map { it.first }).map { Pair(it.label, it) }.toMap()
         allVertex.values.forEach { tree.addVertex(it) }
-        ops.forEach { op -> op.second.forEach { tree.addEdge(op.first, allVertex[it]!!) } }
+        ops.forEach { op ->
+            val (left, right) = op.second
+            val leftNode = allVertex[left]!!
+            val rightNode = allVertex[right]!!
+            leftNode.side = RiddleSide.LEFT
+            rightNode.side = RiddleSide.RIGHT
+            tree.addEdge(op.first, leftNode)
+            tree.addEdge(op.first, rightNode)
+        }
     }
 
     fun findRootNumber(): Long {
         solve()
         return tree.vertexSet().find { it.label == ROOT }!!.value!!
+    }
+
+    fun findYelledNumber(): Long {
+        solve()
+        var root = tree.vertexSet().find { it.label == ROOT }!!
+        var children = tree.outgoingEdgesOf(root).map { tree.getEdgeTarget(it) }
+        var mine = children.find { child ->
+            DepthFirstIterator(tree, child).forEach { ri ->
+                if (ri.label == ME) return@find true
+            }
+            false
+        }!!
+        var other = children.find { it != mine }!!
+        mine.value = other.value!!
+        root = mine
+        while (true) {
+            if (root.label == ME) return root.value!!
+            children = tree.outgoingEdgesOf(root).map { tree.getEdgeTarget(it) }
+            mine = children.find { child ->
+                DepthFirstIterator(tree, child).forEach { ri ->
+                    if (ri.label == ME) return@find true
+                }
+                false
+            }!!
+            other = children.find { it != mine }!!
+            val newValue = if (mine.side == RiddleSide.LEFT) {
+                root.operation.calculateMissingValue(null, other.value, root.value!!)
+            }
+            else {
+                root.operation.calculateMissingValue(other.value, null, root.value!!)
+            }
+            mine.value = newValue
+            root = mine
+        }
     }
 
     private fun solve() {
@@ -51,6 +93,7 @@ class MonkeyRiddle(data: String) {
 
     companion object {
         private const val ROOT = "root"
+        private const val ME = "humn"
     }
 
 }
