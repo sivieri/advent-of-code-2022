@@ -7,6 +7,7 @@ import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveRight
 import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveUp
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
+import org.junit.Ignore
 import org.junit.Test
 
 class MonkeyMapTest {
@@ -304,6 +305,30 @@ class MonkeyMapTest {
         val result = Coordinate2D(0, 0).moveUp(board, 8)
         val expected = Coordinate2D(0, 0)
         assertThat(result, `is`(expected))
+    }
+
+    @Test
+    @Ignore
+    fun `part 2 example`() {
+        val input = """
+        ...#
+        .#..
+        #...
+        ....
+...#.......#
+........#...
+..#....#....
+..........#.
+        ...#....
+        .....#..
+        .#......
+        ......#.
+
+10R5L5R10L4R5L5
+        """
+        val map = MonkeyMap(input)
+        val result = map.playCube(true)
+        assertThat(result, `is`(5031))
     }
 
 }
