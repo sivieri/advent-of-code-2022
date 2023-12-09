@@ -1,0 +1,140 @@
+package me.sivieri.aoc2022.day22
+
+import me.sivieri.aoc2022.common.Coordinate2D
+
+class MonkeyMap(data: String) {
+
+    private val instructions: List<MapInstruction>
+    private val board: MutableMap<Coordinate2D, Char>
+    private val start: Coordinate2D
+    private val maxX: Int
+    private val maxY: Int
+
+    init {
+        val (board, instructions) = data.split("\n\n")
+
+        // instructions
+        val number = mutableListOf<Char>()
+        this.instructions = instructions
+            .split("\n")[0]
+            .flatMap { c ->
+                if (c.isDigit()) {
+                    number.add(c)
+                    listOf()
+                }
+                else {
+                    listOf(
+                        MoveInstruction(number.joinToString("").toInt()),
+                        if (c == 'L') RotateCounterClockwiseInstruction else RotateClockwiseInstruction
+                    ).also { number.clear() }
+                }
+            }
+            .let {
+                if (number.isNotEmpty()) it.plus(MoveInstruction(number.joinToString("").toInt())) else it
+            }
+
+        // board
+        val lines = board.split("\n").filter { it.isNotBlank() }
+        this.maxX = lines.maxOf { it.length }
+        this.maxY = lines.size
+        this.board = (0 until maxY).flatMap { y ->
+            (0 until maxX).map { x ->
+                Pair(Coordinate2D(x, y), lines[y].getOrElse(x) { NOTHING })
+            }
+        }.toMap().toMutableMap()
+        this.start = this.board.filter { it.key.y == 0 && this.board[it.key] == EMPTY }.minBy { it.key.x }.key
+    }
+
+    fun play(printSteps: Boolean = false): Int {
+        var current = Pair(start, MapDirection.RIGHT)
+        instructions.forEachIndexed { index, instruction ->
+            board[current.first] = current.second.symbol
+            if (printSteps) println("Iteration $index\nInstruction $current\n${boardRepresentation()}\n")
+            when (instruction) {
+                is RotateClockwiseInstruction -> current = Pair(current.first, current.second.rotate(RotateClockwiseInstruction))
+                is RotateCounterClockwiseInstruction -> current = Pair(current.first, current.second.rotate(RotateCounterClockwiseInstruction))
+                is MoveInstruction -> {
+                    val destination = findDestination(current, instruction)
+                    current = Pair(destination, current.second)
+                }
+            }
+        }
+        return 1000 * (current.first.y + 1) + 4 * (current.first.x + 1) + current.second.facing
+    }
+
+    private fun findDestination(current: Pair<Coordinate2D, MapDirection>, instruction: MoveInstruction): Coordinate2D =
+        (1..instruction.move).fold(current.first) { acc, _ ->
+            when (current.second) {
+                MapDirection.RIGHT -> acc.moveRight(board, maxX)
+                MapDirection.LEFT -> acc.moveLeft(board, maxX)
+                MapDirection.UP -> acc.moveUp(board, maxY)
+                MapDirection.DOWN -> acc.moveDown(board, maxY)
+            }
+        }
+
+    private fun boardRepresentation() = (0 until maxY)
+        .joinToString("\n") { y ->
+            (0 until maxX).joinToString("") { x ->
+                board[Coordinate2D(x, y)].toString()
+            }
+        }
+
+    companion object {
+        internal const val EMPTY = '.'
+        internal const val WALL = '#'
+        internal const val NOTHING = ' '
+
+        internal fun Coordinate2D.moveRight(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
+            val minX = (0..this.x).dropWhile { board[Coordinate2D(it, this.y)] == NOTHING }.first()
+            val minC = Coordinate2D(minX, this.y)
+            val x = (this.x + 1) % limit
+            val c = Coordinate2D(x, this.y)
+            return when {
+                board[c] == WALL -> this
+                board[c] == NOTHING && board[minC] == WALL -> this
+                board[c] == NOTHING && board[minC] != WALL -> minC
+                else -> c
+            }
+        }
+
+        internal fun Coordinate2D.moveLeft(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
+            val maxX = ((limit - 1) downTo this.x).dropWhile { board[Coordinate2D(it, this.y)] == NOTHING }.first()
+            val maxC = Coordinate2D(maxX, this.y)
+            val x = if (this.x - 1 < 0) limit - 1 else this.x - 1
+            val c = Coordinate2D(x, this.y)
+            return when {
+                board[c] == WALL -> this
+                board[c] == NOTHING && board[maxC] == WALL -> this
+                board[c] == NOTHING && board[maxC] != WALL -> maxC
+                else -> c
+            }
+        }
+
+        internal fun Coordinate2D.moveDown(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
+            val minY = (0..this.y).dropWhile { board[Coordinate2D(this.x, it)] == NOTHING }.first()
+            val minC = Coordinate2D(this.x, minY)
+            val y = (this.y + 1) % limit
+            val c = Coordinate2D(this.x, y)
+            return when {
+                board[c] == WALL -> this
+                board[c] == NOTHING && board[minC] == WALL -> this
+                board[c] == NOTHING && board[minC] != WALL -> minC
+                else -> c
+            }
+        }
+
+        internal fun Coordinate2D.moveUp(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
+            val maxY = ((limit - 1) downTo this.y).dropWhile { board[Coordinate2D(this.x, it)] == NOTHING }.first()
+            val maxC = Coordinate2D(this.x, maxY)
+            val y = if (this.y - 1 < 0) limit - 1 else this.y - 1
+            val c = Coordinate2D(this.x, y)
+            return when {
+                board[c] == WALL -> this
+                board[c] == NOTHING && board[maxC] == WALL -> this
+                board[c] == NOTHING && board[maxC] != WALL -> maxC
+                else -> c
+            }
+        }
+    }
+
+}
