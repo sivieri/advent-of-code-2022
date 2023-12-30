@@ -17,4 +17,11 @@ enum class MapDirection(val symbol: Char, val facing: Int) {
         }
         is MoveInstruction -> throw IllegalArgumentException("Move cannot be used to change direction")
     }
+
+    fun opposite(): MapDirection = when (this) {
+        RIGHT -> LEFT
+        LEFT -> RIGHT
+        UP -> DOWN
+        DOWN -> UP
+    }
 }

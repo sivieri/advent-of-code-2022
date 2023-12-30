@@ -1,6 +1,9 @@
 package me.sivieri.aoc2022.day22
 
 import me.sivieri.aoc2022.common.Coordinate2D
+import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveDown3D
+import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveLeft3D
+import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveRight3D
 
 class MonkeyMap(data: String) {
 
@@ -128,30 +131,56 @@ class MonkeyMap(data: String) {
         }
 
     fun playCube(printSteps: Boolean = false): Int {
-        var current = Pair(start, MapDirection.RIGHT)
+        var current = MapPosition3D(start3D.first, start3D.second, MapDirection.RIGHT)
         instructions.forEachIndexed { index, instruction ->
-            board[current.first] = current.second.symbol
-            if (printSteps) println("Iteration $index\nInstruction $current\n${boardRepresentation()}\n")
-            when (instruction) {
-                is RotateClockwiseInstruction -> current = Pair(current.first, current.second.rotate(RotateClockwiseInstruction))
-                is RotateCounterClockwiseInstruction -> current = Pair(current.first, current.second.rotate(RotateCounterClockwiseInstruction))
-                is MoveInstruction -> {
-                    val destination = findDestination3D(current, instruction)
-                    current = Pair(destination, current.second)
-                }
+            val (boardIndex, position, direction) = current
+            val board = board3D[boardIndex]!!
+            board[position] = direction.symbol
+            if (printSteps) println("Iteration $index - Instruction $current")
+            current = when (instruction) {
+                is RotateClockwiseInstruction -> current.copy(direction = current.direction.rotate(RotateClockwiseInstruction))
+                is RotateCounterClockwiseInstruction -> current.copy(direction = current.direction.rotate(RotateCounterClockwiseInstruction))
+                is MoveInstruction -> findDestination3D(current, instruction)
             }
         }
-        return 1000 * (current.first.y + 1) + 4 * (current.first.x + 1) + current.second.facing
+        val (position, direction) = calculateFinalPosition(current)
+        return 1000 * (position.y + 1) + 4 * (position.x + 1) + direction.facing
     }
 
-    private fun findDestination3D(current: Pair<Coordinate2D, MapDirection>, instruction: MoveInstruction): Coordinate2D =
-        (1..instruction.move).fold(current.first) { acc, _ ->
-            when (current.second) {
-                MapDirection.RIGHT -> acc.moveRight3D(board, maxX)
-                MapDirection.LEFT -> acc.moveLeft3D(board, maxX)
-                MapDirection.UP -> acc.moveUp3D(board, maxY)
-                MapDirection.DOWN -> acc.moveDown3D(board, maxY)
+    private fun findDestination3D(current: MapPosition3D, instruction: MoveInstruction): MapPosition3D =
+        (1..instruction.move).fold(current) { acc, _ ->
+            when (acc.direction) {
+                MapDirection.RIGHT -> acc.moveRight3D(board3D, maxX3D, maxY3D)
+                MapDirection.LEFT -> acc.moveLeft3D(board3D, maxX3D, maxY3D)
+                MapDirection.UP -> acc.moveUp3D(board3D, maxX3D, maxY3D)
+                MapDirection.DOWN -> acc.moveDown3D(board3D, maxX3D, maxY3D)
             }
+        }
+
+    private fun calculateFinalPosition(current: MapPosition3D): Pair<Coordinate2D, MapDirection> =
+        when (current.board) {
+            1 -> Pair(current.position, current.direction)
+            2 -> Pair(
+                Coordinate2D(current.position.x, current.position.y + maxY3D),
+                current.direction
+            )
+            3 -> Pair(
+                Coordinate2D(current.position.x + maxX3D, current.position.y + maxY3D),
+                current.direction
+            )
+            4 -> Pair(
+                Coordinate2D(current.position.x + 2 * maxX3D, current.position.y + maxY3D),
+                current.direction
+            )
+            5 -> Pair(
+                Coordinate2D(current.position.x + 2 * maxX3D, current.position.y + 2 * maxY3D),
+                current.direction
+            )
+            6 -> Pair(
+                Coordinate2D(current.position.x + 3 * maxX3D, current.position.y + 2 * maxY3D),
+                current.direction
+            )
+            else -> throw IllegalArgumentException("Board cannot be ${current.board}")
         }
 
     private fun boardRepresentation() = (0 until maxY)
@@ -165,6 +194,38 @@ class MonkeyMap(data: String) {
         internal const val EMPTY = '.'
         internal const val WALL = '#'
         internal const val NOTHING = ' '
+
+        private fun adjacencyList(
+            c: MapPosition3D,
+            mx: Int,
+            my: Int
+        ): MapPosition3D = when (Pair(c.board, c.direction)) {
+            Pair(1, MapDirection.UP) -> MapPosition3D(2, Coordinate2D(mx - c.position.x - 1, 0), MapDirection.DOWN)
+            Pair(1, MapDirection.DOWN) -> MapPosition3D(4, Coordinate2D(0, c.position.y), MapDirection.DOWN)
+            Pair(1, MapDirection.LEFT) -> MapPosition3D(3, Coordinate2D(c.position.y, 0), MapDirection.DOWN)
+            Pair(1, MapDirection.RIGHT) -> MapPosition3D(6, Coordinate2D(mx - 1, my - c.position.y - 1), MapDirection.LEFT)
+            Pair(2, MapDirection.UP) -> MapPosition3D(1, Coordinate2D(mx - c.position.x - 1, 0), MapDirection.DOWN)
+            Pair(2, MapDirection.DOWN) -> MapPosition3D(5, Coordinate2D(mx - c.position.x - 1, my - 1), MapDirection.UP)
+            Pair(2, MapDirection.LEFT) -> MapPosition3D(6, Coordinate2D(mx - c.position.x - 1, my - 1), MapDirection.UP)
+            Pair(2, MapDirection.RIGHT) -> MapPosition3D(3, Coordinate2D(0, c.position.y), MapDirection.RIGHT)
+            Pair(3, MapDirection.UP) -> MapPosition3D(1, Coordinate2D(0, c.position.x), MapDirection.RIGHT)
+            Pair(3, MapDirection.DOWN) -> MapPosition3D(5, Coordinate2D(0, mx - c.position.x - 1), MapDirection.RIGHT)
+            Pair(3, MapDirection.LEFT) -> MapPosition3D(2, Coordinate2D(mx - 1, c.position.y), MapDirection.LEFT)
+            Pair(3, MapDirection.RIGHT) -> MapPosition3D(4, Coordinate2D(0, c.position.y), MapDirection.RIGHT)
+            Pair(4, MapDirection.UP) -> MapPosition3D(1, Coordinate2D(c.position.x, my - 1), MapDirection.UP)
+            Pair(4, MapDirection.DOWN) -> MapPosition3D(5, Coordinate2D(c.position.x, 0), MapDirection.DOWN)
+            Pair(4, MapDirection.LEFT) -> MapPosition3D(3, Coordinate2D(mx - 1, c.position.y), MapDirection.LEFT)
+            Pair(4, MapDirection.RIGHT) -> MapPosition3D(6, Coordinate2D(my - c.position.y - 1, 0), MapDirection.DOWN)
+            Pair(5, MapDirection.UP) -> MapPosition3D(4, Coordinate2D(c.position.x, my - 1), MapDirection.UP)
+            Pair(5, MapDirection.DOWN) -> MapPosition3D(2, Coordinate2D(c.position.x, 0), MapDirection.DOWN)
+            Pair(5, MapDirection.LEFT) -> MapPosition3D(3, Coordinate2D(mx - c.position.x - 1, my - 1), MapDirection.UP)
+            Pair(5, MapDirection.RIGHT) -> MapPosition3D(6, Coordinate2D(0, c.position.y), MapDirection.RIGHT)
+            Pair(6, MapDirection.UP) -> MapPosition3D(4, Coordinate2D(mx - 1, mx - c.position.x - 1), MapDirection.LEFT)
+            Pair(6, MapDirection.DOWN) -> MapPosition3D(2, Coordinate2D(mx - 1, c.position.x), MapDirection.RIGHT)
+            Pair(6, MapDirection.LEFT) -> MapPosition3D(5, Coordinate2D(mx - 1, c.position.y), MapDirection.LEFT)
+            Pair(6, MapDirection.RIGHT) -> MapPosition3D(1, Coordinate2D(mx - 1, my - c.position.y - 1), MapDirection.LEFT)
+            else -> throw IllegalArgumentException("Illegal position $c")
+        }
 
         internal fun Coordinate2D.moveRight(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
             val minX = (0..this.x).dropWhile { board[Coordinate2D(it, this.y)] == NOTHING }.first()
@@ -218,20 +279,80 @@ class MonkeyMap(data: String) {
             }
         }
 
-        internal fun Coordinate2D.moveRight3D(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
-            TODO()
+        internal fun MapPosition3D.moveRight3D(
+            boards: Map<Int, MutableMap<Coordinate2D, Char>>,
+            maxX: Int,
+            maxY: Int
+        ): MapPosition3D {
+            val board = boards[this.board]!!
+            val newx = position.x + 1
+            return if (newx == maxX) {
+                val n = adjacencyList(this, maxX, maxY)
+                val newBoard = boards[n.board]!!
+                if (newBoard[n.position] == WALL) this
+                else n
+            }
+            else {
+                if (board[Coordinate2D(newx, position.y)] == WALL) this
+                else copy(position = Coordinate2D(newx, position.y))
+            }
         }
 
-        internal fun Coordinate2D.moveLeft3D(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
-            TODO()
+        internal fun MapPosition3D.moveLeft3D(
+            boards: Map<Int, MutableMap<Coordinate2D, Char>>,
+            maxX: Int,
+            maxY: Int
+        ): MapPosition3D {
+            val board = boards[this.board]!!
+            val newx = position.x - 1
+            return if (newx < 0) {
+                val n = adjacencyList(this, maxX, maxY)
+                val newBoard = boards[n.board]!!
+                if (newBoard[n.position] == WALL) this
+                else n
+            }
+            else {
+                if (board[Coordinate2D(newx, position.y)] == WALL) this
+                else copy(position = Coordinate2D(newx, position.y))
+            }
         }
 
-        internal fun Coordinate2D.moveDown3D(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
-            TODO()
+        internal fun MapPosition3D.moveDown3D(
+            boards: Map<Int, MutableMap<Coordinate2D, Char>>,
+            maxX: Int,
+            maxY: Int
+        ): MapPosition3D {
+            val board = boards[this.board]!!
+            val newy = position.y + 1
+            return if (newy == maxY) {
+                val n = adjacencyList(this, maxX, maxY)
+                val newBoard = boards[n.board]!!
+                if (newBoard[n.position] == WALL) this
+                else n
+            }
+            else {
+                if (board[Coordinate2D(position.x, newy)] == WALL) this
+                else copy(position = Coordinate2D(position.x, newy))
+            }
         }
 
-        internal fun Coordinate2D.moveUp3D(board: Map<Coordinate2D, Char>, limit: Int): Coordinate2D {
-            TODO()
+        internal fun MapPosition3D.moveUp3D(
+            boards: Map<Int, MutableMap<Coordinate2D, Char>>,
+            maxX: Int,
+            maxY: Int
+        ): MapPosition3D {
+            val board = boards[this.board]!!
+            val newy = position.y - 1
+            return if (newy < 0) {
+                val n = adjacencyList(this, maxX, maxY)
+                val newBoard = boards[n.board]!!
+                if (newBoard[n.position] == WALL) this
+                else n
+            }
+            else {
+                if (board[Coordinate2D(position.x, newy)] == WALL) this
+                else copy(position = Coordinate2D(position.x, newy))
+            }
         }
     }
 
