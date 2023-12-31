@@ -8,6 +8,8 @@ data class Coordinate2D(
     val y: Int
 ): Comparable<Coordinate2D> {
 
+    operator fun plus(other: Coordinate2D) = Coordinate2D(other.x + x, other.y + y)
+
     fun distance(other: Coordinate2D): Int =
         kotlin.math.sqrt((other.x - x).toDouble().pow(2) + (other.y - y).toDouble().pow(2) + (other.y - y).toDouble().pow(2)).toInt()
 
