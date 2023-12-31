@@ -6,11 +6,11 @@ import java.nio.file.Path
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 object Utils {
 
-    fun readInput(day: Int): String = Files.readString(Path.of(this::class.java.getResource("/day$day/input.txt").toURI()))
+    fun readInput(day: Int): String = Files.readString(Path.of(this::class.java.getResource("/day$day/input_wrong_folding.txt").toURI()))
 
     fun readInputToList(day: Int): List<String> =
         Files
-            .lines(Path.of(this::class.java.getResource("/day$day/input.txt").toURI()))
+            .lines(Path.of(this::class.java.getResource("/day$day/input_wrong_folding.txt").toURI()))
             .iterator()
             .asSequence()
             .toList()
@@ -21,7 +21,7 @@ object Utils {
         f: (String) -> T
     ): List<T> {
         val lines = Files
-            .lines(Path.of(this::class.java.getResource("/day$day/input.txt").toURI()))
+            .lines(Path.of(this::class.java.getResource("/day$day/input_wrong_folding.txt").toURI()))
             .iterator()
         var buffer = StringBuffer()
         val data = mutableListOf<T>()

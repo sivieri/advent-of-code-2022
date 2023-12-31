@@ -1,10 +1,6 @@
 package me.sivieri.aoc2022.day22
 
 import me.sivieri.aoc2022.common.Coordinate2D
-import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveDown
-import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveLeft
-import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveRight
-import me.sivieri.aoc2022.day22.MonkeyMap.Companion.moveUp
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.junit.Ignore
@@ -308,7 +304,6 @@ class MonkeyMapTest {
     }
 
     @Test
-    @Ignore
     fun `part 2 example`() {
         val input = """
         ...#
