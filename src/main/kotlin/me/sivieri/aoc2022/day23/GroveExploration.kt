@@ -20,7 +20,7 @@ class GroveExploration(data: String) {
     }
 
     fun countEmptyGround(rounds: Int): Int {
-        play(rounds)
+        playRounds(rounds)
         val minx = elves.minOf { it.position.x }
         val maxx = elves.maxOf { it.position.x }
         val miny = elves.minOf { it.position.y }
@@ -31,7 +31,7 @@ class GroveExploration(data: String) {
             .size
     }
 
-    private fun play(rounds: Int) {
+    private fun playRounds(rounds: Int): Int {
         var counter = 0
         do {
             println("Round ${counter++}")
@@ -44,6 +44,24 @@ class GroveExploration(data: String) {
             roundPart2()
             elves.forEach { grove.setSymbol(it.position, ELF) }
         } while (counter <= rounds)
+        return counter
+    }
+
+    fun countRounds(): Int = playUntilDone()
+
+    private fun playUntilDone(): Int {
+        var counter = 0
+        var changed: Boolean
+        do {
+            if (counter++ % 100 == 0) println(counter)
+            // part 1
+            roundPart1()
+            elves.forEach { grove.setSymbol(it.position, EMPTY) }
+            // part 2
+            changed = roundPart2()
+            elves.forEach { grove.setSymbol(it.position, ELF) }
+        } while (changed)
+        return counter
     }
 
     private fun roundPart1() {

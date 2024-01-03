@@ -37,4 +37,20 @@ class GroveExplorationTest {
         assertThat(result, `is`(110))
     }
 
+    @Test
+    fun `part 2 example`() {
+        val input = """
+            ....#..
+            ..###.#
+            #...#.#
+            .#...##
+            #.###..
+            ##.#.##
+            .#..#..
+        """.trimIndent()
+        val grove = GroveExploration(input)
+        val result = grove.countRounds()
+        assertThat(result, `is`(20))
+    }
+
 }
