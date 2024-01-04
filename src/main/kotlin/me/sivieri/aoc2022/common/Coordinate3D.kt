@@ -21,6 +21,8 @@ data class Coordinate3D(
     fun manhattanDistance(other: Coordinate3D): Int =
         abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
 
+    fun to2D(): Coordinate2D = Coordinate2D(x, y)
+
     operator fun minus(other: Coordinate3D): Coordinate3D =
         Coordinate3D(
             x - other.x,
