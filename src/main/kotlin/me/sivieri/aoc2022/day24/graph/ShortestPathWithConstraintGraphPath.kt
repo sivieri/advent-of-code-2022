@@ -1,6 +1,7 @@
 package me.sivieri.aoc2022.day24.graph
 
 import me.sivieri.aoc2022.common.Coordinate3D
+import me.sivieri.aoc2022.day24.Valley
 import org.jgrapht.Graph
 import org.jgrapht.GraphPath
 import org.jgrapht.graph.DefaultWeightedEdge
@@ -22,4 +23,6 @@ class ShortestPathWithConstraintGraphPath(
     override fun getWeight(): Double = vertexAccumulator.weight.toDouble()
 
     fun getRealPath(): List<VisitedCell> = vertexAccumulator.vertices
+
+    fun getLatestValley(): Valley = vertexAccumulator.valley
 }

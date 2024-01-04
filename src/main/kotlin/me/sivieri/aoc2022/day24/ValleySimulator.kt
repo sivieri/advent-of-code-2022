@@ -70,13 +70,7 @@ class ValleySimulator(data: String) {
     }
 
     fun findThePath(debug: Boolean = false): Int {
-        val sp = ShortestPathWithConstraint(debug, graph, valley) { c, valley ->
-            val targets = graph
-                .outgoingEdgesOf(c)
-                .map { graph.getEdgeTarget(it) }
-            val filteredTargets = valley.freeLocations(targets)
-            filteredTargets
-        }
+        val sp = ShortestPathWithConstraint(debug, graph, valley, ::findCandidates)
         val path = sp.getPath(start, end)
         if (debug) {
             (path as ShortestPathWithConstraintGraphPath).getRealPath().forEach {
@@ -86,6 +80,59 @@ class ValleySimulator(data: String) {
             }
         }
         return path.vertexList.size
+    }
+
+    fun backAndForth(debug: Boolean = false): Int {
+        // forth
+        val sp = ShortestPathWithConstraint(debug, graph, valley, ::findCandidates)
+        val path = sp.getPath(start, end)
+        path as ShortestPathWithConstraintGraphPath
+        if (debug) {
+            path.getRealPath().forEach {
+                println("Minute: ${it.minute}")
+                println("Current: ${it.coordinate}")
+                println()
+            }
+        }
+        println("Forth: ${path.vertexList.size}")
+        // back
+        val backValley = path.getLatestValley()
+        val backSP = ShortestPathWithConstraint(debug, graph, backValley, ::findCandidates)
+        val backPath = backSP.getPath(end, start)
+        backPath as ShortestPathWithConstraintGraphPath
+        if (debug) {
+            backPath.getRealPath().forEach {
+                println("Minute: ${it.minute}")
+                println("Current: ${it.coordinate}")
+                println()
+            }
+        }
+        println("Back: ${path.vertexList.size}")
+        // forth
+        val anotherValley = backPath.getLatestValley()
+        val anotherSP = ShortestPathWithConstraint(debug, graph, anotherValley, ::findCandidates)
+        val anotherPath = anotherSP.getPath(start, end)
+        anotherPath as ShortestPathWithConstraintGraphPath
+        if (debug) {
+            anotherPath.getRealPath().forEach {
+                println("Minute: ${it.minute}")
+                println("Current: ${it.coordinate}")
+                println()
+            }
+        }
+        println("Forth: ${path.vertexList.size}")
+        return path.vertexList.size + backPath.vertexList.size + anotherPath.vertexList.size
+    }
+
+    private fun findCandidates(
+        c: Coordinate3D,
+        valley: Valley
+    ): List<Coordinate3D> {
+        val targets = graph
+            .outgoingEdgesOf(c)
+            .map { graph.getEdgeTarget(it) }
+        val filteredTargets = valley.freeLocations(targets)
+        return filteredTargets
     }
 
     companion object {

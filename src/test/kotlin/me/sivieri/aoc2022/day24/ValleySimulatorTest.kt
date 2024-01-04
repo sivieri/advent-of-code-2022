@@ -21,4 +21,19 @@ class ValleySimulatorTest {
         assertThat(path, `is`(18))
     }
 
+    @Test
+    fun `part 2 example`() {
+        val input = """
+            #.######
+            #>>.<^<#
+            #.<..<<#
+            #>v.><>#
+            #<^v^^>#
+            ######.#
+        """.trimIndent()
+        val simulator = ValleySimulator(input)
+        val path = simulator.backAndForth(true)
+        assertThat(path, `is`(54))
+    }
+
 }
